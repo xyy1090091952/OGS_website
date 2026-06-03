@@ -42,6 +42,9 @@ export default function AboutSection() {
           }
         />
 
+        {/* 内容外壳：实色大白卡（base44 use-cases 第二屏同款）
+            漂浮在粉紫渐变上，形成强烈反色对比 */}
+        <div className="rounded-[28px] bg-card/95 p-8 shadow-[0_30px_80px_-40px_rgb(var(--fg)/0.30)] ring-1 ring-fg/5 backdrop-blur-md md:p-14">
         {/* 双栏：左签名图 / 右正文 */}
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
           {/* 左：大引文 + handle */}
@@ -160,6 +163,7 @@ export default function AboutSection() {
               </ul>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </section>

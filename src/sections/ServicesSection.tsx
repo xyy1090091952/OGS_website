@@ -48,6 +48,9 @@ export default function ServicesSection() {
             const sTitle = pick(s.title) as string;
             const sDesc = pick(s.desc) as string;
             const sBullets = pick(s.bullets) as string[];
+            // 第一张卡用主题色反色背景，作为视觉跳跃点
+            // （参考 base44 第三屏中央红橙 app 卡的色块处理）
+            const isAccentCard = i === 0;
             return (
             <motion.div
               key={s.id}
@@ -57,22 +60,49 @@ export default function ServicesSection() {
               transition={{ duration: 0.7, ease: EASE.expo, delay: i * 0.08 }}
               onMouseEnter={() => setCursor("hover-link")}
               onMouseLeave={() => setCursor("default")}
-              className="group relative flex h-80 flex-col overflow-hidden bg-bg p-6 transition-colors duration-500 hover:bg-card md:p-8"
+              className={
+                isAccentCard
+                  ? "group relative flex h-80 flex-col overflow-hidden p-6 text-bg transition-all duration-500 md:p-8"
+                  : "group relative flex h-80 flex-col overflow-hidden bg-bg p-6 transition-colors duration-500 hover:bg-card md:p-8"
+              }
+              style={
+                isAccentCard
+                  ? { backgroundColor: "rgb(var(--accent))" }
+                  : undefined
+              }
             >
               {/* 顶部编号 */}
-              <div className="font-mono text-xs uppercase tracking-widest text-fg/40">
+              <div
+                className={
+                  isAccentCard
+                    ? "font-mono text-xs uppercase tracking-widest text-bg/60"
+                    : "font-mono text-xs uppercase tracking-widest text-fg/40"
+                }
+              >
                 {s.num}
               </div>
 
               {/* 标题：hover 时上移 */}
-              <h3 className="mt-auto font-display text-2xl tracking-tight transition-all duration-500 ease-expo group-hover:-translate-y-1 group-hover:text-accent md:text-3xl">
+              <h3
+                className={
+                  isAccentCard
+                    ? "mt-auto font-display text-2xl tracking-tight transition-all duration-500 ease-expo group-hover:-translate-y-1 md:text-3xl"
+                    : "mt-auto font-display text-2xl tracking-tight transition-all duration-500 ease-expo group-hover:-translate-y-1 group-hover:text-accent md:text-3xl"
+                }
+              >
                 {sTitle}
               </h3>
 
               {/* 描述与关键词共享同一位置：默认显示描述，hover 切换为关键词 */}
               <div className="relative mt-2 min-h-[68px]">
                 {/* 默认显示的描述：hover 时淡出 */}
-                <p className="absolute inset-0 text-sm text-fg/60 transition-opacity duration-300 group-hover:opacity-0">
+                <p
+                  className={
+                    isAccentCard
+                      ? "absolute inset-0 text-sm text-bg/80 transition-opacity duration-300 group-hover:opacity-0"
+                      : "absolute inset-0 text-sm text-fg/60 transition-opacity duration-300 group-hover:opacity-0"
+                  }
+                >
                   {sDesc}
                 </p>
                 {/* hover 时浮出的关键词：默认透明 */}
@@ -80,7 +110,11 @@ export default function ServicesSection() {
                   {sBullets.map((b) => (
                     <span
                       key={b}
-                      className="rounded-full border border-fg/20 bg-bg/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-fg/70"
+                      className={
+                        isAccentCard
+                          ? "rounded-full border border-bg/30 bg-bg/15 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-bg/90"
+                          : "rounded-full border border-fg/20 bg-bg/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-fg/70"
+                      }
                     >
                       {b}
                     </span>
@@ -89,7 +123,13 @@ export default function ServicesSection() {
               </div>
 
               {/* 顶角强调点 */}
-              <span className="absolute right-6 top-6 h-1.5 w-1.5 rounded-full bg-accent opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:right-8 md:top-8" />
+              <span
+                className={
+                  isAccentCard
+                    ? "absolute right-6 top-6 h-1.5 w-1.5 rounded-full bg-bg opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:right-8 md:top-8"
+                    : "absolute right-6 top-6 h-1.5 w-1.5 rounded-full bg-accent opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:right-8 md:top-8"
+                }
+              />
             </motion.div>
             );
           })}

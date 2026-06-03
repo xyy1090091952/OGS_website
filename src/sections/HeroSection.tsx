@@ -93,6 +93,36 @@ export default function HeroSection() {
           {t("hero.subAfter")}
         </motion.p>
 
+        {/* CTA 反色按钮组（实色色块对照渐变背景，参考 base44 首屏右下橙色按钮）*/}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: EASE.expo, delay: 1.1 }}
+          className="mt-8 flex flex-wrap items-center gap-3 md:mt-10"
+        >
+          {/* 主按钮：fg 实色（深色块） */}
+          <a
+            href={`#${ANCHORS.WORKS}`}
+            onMouseEnter={() => setCursor("hover-link")}
+            onMouseLeave={() => setCursor("default")}
+            className="group inline-flex items-center gap-3 rounded-full bg-fg px-6 py-3.5 text-sm font-medium text-bg transition-all duration-500 hover:gap-4 hover:bg-accent"
+          >
+            {t("hero.ctaPrimary")}
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-bg/20 transition-transform duration-500 group-hover:translate-x-0.5">
+              <ArrowDown size={14} className="-rotate-45" />
+            </span>
+          </a>
+          {/* 副按钮：透明 + 边框 */}
+          <a
+            href={`#${ANCHORS.CONTACT}`}
+            onMouseEnter={() => setCursor("hover-link")}
+            onMouseLeave={() => setCursor("default")}
+            className="inline-flex items-center gap-2 rounded-full border border-fg/20 bg-bg/40 px-6 py-3.5 text-sm font-medium text-fg backdrop-blur-md transition-colors duration-300 hover:border-fg/60 hover:bg-bg/60"
+          >
+            {t("hero.ctaSecondary")}
+          </a>
+        </motion.div>
+
         {/* 底部信息行 */}
         <motion.div
           initial={{ opacity: 0 }}

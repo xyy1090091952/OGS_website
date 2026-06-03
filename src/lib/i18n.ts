@@ -63,6 +63,17 @@ const dict = {
     en: "Portfolio · 2024 / 25",
     ja: "ポートフォリオ · 2024 / 25",
   },
+  // Hero CTA 按钮
+  "hero.ctaPrimary": {
+    zh: "查看作品",
+    en: "View works",
+    ja: "作品を見る",
+  },
+  "hero.ctaSecondary": {
+    zh: "联系合作",
+    en: "Get in touch",
+    ja: "お問い合わせ",
+  },
 
   // About Section
   "about.tag": { zh: "About Me", en: "About Me", ja: "About Me" },

@@ -46,6 +46,9 @@ export default function ContactSection() {
       />
 
       <div className="ogs-container">
+        {/* 内容外壳：实色大白卡（base44 "So what are we building" 同款）
+            漂浮在重橙色渐变上，形成强烈反色对比 */}
+        <div className="rounded-[28px] bg-card/95 p-8 shadow-[0_40px_100px_-40px_rgb(var(--accent)/0.45)] ring-1 ring-fg/5 backdrop-blur-md md:p-14">
         <SectionHeader
           num="04"
           tag={t("contact.tag")}
@@ -126,6 +129,7 @@ export default function ContactSection() {
           <span className="h-px w-8 bg-fg/20" />
           {t("contact.ps")}
         </motion.div>
+        </div>
       </div>
 
       <Toast visible={toast} message={t("contact.copied")} />
