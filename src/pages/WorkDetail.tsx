@@ -12,9 +12,13 @@ import { useWork } from "@/hooks/useWorks";
 import { ROUTES, EASE, ANCHORS } from "@/constants";
 import { useUIStore } from "@/store/uiStore";
 import type { WorkContent } from "@/data/types";
+// 多语言：t 用于 UI 文案，pick 用于从 LocalizedText 中按当前语言取值
+import { useT } from "@/lib/i18n";
 
 // 渲染单个内容块
 function ContentBlock({ block, index }: { block: WorkContent; index: number }) {
+  // 子组件也需要 pick：把多语言文本/alt 抽出当前语言字符串
+  const { pick } = useT();
   const common = {
     initial: { opacity: 0, y: 30 },
     whileInView: { opacity: 1, y: 0 },
@@ -30,7 +34,7 @@ function ContentBlock({ block, index }: { block: WorkContent; index: number }) {
           key={index}
           className="mx-auto max-w-2xl text-lg leading-relaxed text-fg/80 md:text-xl"
         >
-          {block.content}
+          {pick(block.content) as string}
         </motion.p>
       );
     case "image":
@@ -38,7 +42,7 @@ function ContentBlock({ block, index }: { block: WorkContent; index: number }) {
         <motion.figure {...common} key={index} className="overflow-hidden rounded-2xl">
           <img
             src={block.src}
-            alt={block.alt}
+            alt={pick(block.alt) as string}
             loading="lazy"
             className="h-auto w-full"
           />
@@ -53,13 +57,13 @@ function ContentBlock({ block, index }: { block: WorkContent; index: number }) {
         >
           <img
             src={block.left}
-            alt={block.alt ?? "image"}
+            alt={(block.alt ? (pick(block.alt) as string) : "image")}
             loading="lazy"
             className="h-auto w-full rounded-2xl"
           />
           <img
             src={block.right}
-            alt={block.alt ?? "image"}
+            alt={(block.alt ? (pick(block.alt) as string) : "image")}
             loading="lazy"
             className="h-auto w-full rounded-2xl"
           />
@@ -90,6 +94,7 @@ export default function WorkDetail() {
   const data = useWork(slug);
   const navigate = useNavigate();
   const setCursor = useUIStore((s) => s.setCursor);
+  const { t, pick } = useT();
 
   // 进入页面回到顶部
   useEffect(() => {
@@ -101,9 +106,9 @@ export default function WorkDetail() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <p className="font-display text-3xl">作品不存在</p>
+          <p className="font-display text-3xl">{t("wd.notFound")}</p>
           <Link to={ROUTES.HOME} className="btn-outline mt-6">
-            <ArrowLeft size={14} /> 返回首页
+            <ArrowLeft size={14} /> {t("wd.backHome")}
           </Link>
         </div>
       </div>
@@ -111,6 +116,11 @@ export default function WorkDetail() {
   }
 
   const { work, prev, next } = data;
+  // 当前作品/上下篇的多语言标题
+  const workTitle = pick(work.title) as string;
+  const workSummary = pick(work.summary) as string;
+  const prevTitle = pick(prev.title) as string;
+  const nextTitle = pick(next.title) as string;
 
   return (
     <article className="pb-24">
@@ -163,7 +173,7 @@ export default function WorkDetail() {
               onMouseLeave={() => setCursor("default")}
               className="flex items-center gap-1.5 transition-opacity hover:opacity-100"
             >
-              <ArrowLeft size={12} /> Back
+              <ArrowLeft size={12} /> {t("wd.back")}
             </button>
             <span className="opacity-30">/</span>
             <span>{work.category}</span>
@@ -177,7 +187,7 @@ export default function WorkDetail() {
             transition={{ duration: 0.9, ease: EASE.expo, delay: 0.1 }}
             className="font-display text-5xl leading-[1.05] tracking-tightest md:text-7xl lg:text-8xl"
           >
-            {work.title}
+            {workTitle}
           </motion.h1>
 
           <motion.div
@@ -187,28 +197,28 @@ export default function WorkDetail() {
             className="mt-8 grid max-w-3xl grid-cols-2 gap-6 text-xs uppercase tracking-widest md:grid-cols-3"
           >
             <div>
-              <div className="opacity-50">Category</div>
+              <div className="opacity-50">{t("wd.category")}</div>
               <div className="mt-1">{work.category}</div>
             </div>
             <div>
-              <div className="opacity-50">Year</div>
+              <div className="opacity-50">{t("wd.year")}</div>
               <div className="mt-1">{work.year}</div>
             </div>
             {work.client && (
               <div>
-                <div className="opacity-50">Client</div>
+                <div className="opacity-50">{t("wd.client")}</div>
                 <div className="mt-1">{work.client}</div>
               </div>
             )}
             <div className="col-span-2 md:col-span-3">
-              <div className="opacity-50">Tags</div>
+              <div className="opacity-50">{t("wd.tags")}</div>
               <div className="mt-2 flex flex-wrap gap-2">
-                {work.tags.map((t) => (
+                {work.tags.map((tag) => (
                   <span
-                    key={t}
+                    key={tag}
                     className="rounded-full border border-current/30 px-3 py-1 text-[10px]"
                   >
-                    {t}
+                    {tag}
                   </span>
                 ))}
               </div>
@@ -228,7 +238,7 @@ export default function WorkDetail() {
             transition={{ duration: 0.8, ease: EASE.expo }}
             className="mx-auto mb-20 max-w-3xl font-display text-3xl leading-[1.2] tracking-tight md:text-4xl"
           >
-            {work.summary}
+            {workSummary}
           </motion.p>
 
           {/* 内容块流 */}
@@ -256,10 +266,10 @@ export default function WorkDetail() {
             />
             <div className="min-w-0 flex-1">
               <div className="font-mono text-xs uppercase tracking-widest text-fg/40">
-                Previous
+                {t("wd.previous")}
               </div>
               <div className="mt-1 truncate font-display text-xl tracking-tight transition-colors group-hover:text-accent md:text-2xl">
-                {prev.title}
+                {prevTitle}
               </div>
             </div>
             {/* hover 缩略图预览 */}
@@ -289,10 +299,10 @@ export default function WorkDetail() {
             </div>
             <div className="ml-auto min-w-0 flex-1">
               <div className="font-mono text-xs uppercase tracking-widest text-fg/40">
-                Next
+                {t("wd.next")}
               </div>
               <div className="mt-1 truncate font-display text-xl tracking-tight transition-colors group-hover:text-accent md:text-2xl">
-                {next.title}
+                {nextTitle}
               </div>
             </div>
             <ArrowRight
@@ -310,7 +320,7 @@ export default function WorkDetail() {
             onMouseLeave={() => setCursor("default")}
             className="btn-outline"
           >
-            喜欢就来聊聊 <ArrowUpRight size={14} />
+            {t("wd.contactCta")} <ArrowUpRight size={14} />
           </Link>
         </div>
       </section>

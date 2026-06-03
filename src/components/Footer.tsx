@@ -7,10 +7,13 @@ import { motion } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
 import { EASE } from "@/constants";
+// 多语言：t 翻译 UI 文案
+import { useT } from "@/lib/i18n";
 
 export default function Footer() {
   const setCursor = useUIStore((s) => s.setCursor);
   const year = new Date().getFullYear();
+  const { t } = useT();
 
   const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -25,23 +28,23 @@ export default function Footer() {
           transition={{ duration: 0.9, ease: EASE.expo }}
           className="mb-12 select-none font-display text-[18vw] leading-none tracking-tightest md:text-[14vw]"
         >
-          With <span className="italic text-accent">Creative</span> From Heart.
+          {t("footer.with")} <span className="italic text-accent">{t("footer.creative")}</span> {t("footer.fromHeart")}
         </motion.div>
 
         {/* 版权信息行 */}
         <div className="flex flex-col gap-4 border-t border-fg/10 pt-6 text-xs uppercase tracking-widest text-fg/60 md:flex-row md:items-center md:justify-between">
-          <span>© {year} Old_glasses · All rights reserved.</span>
+          <span>{t("footer.copyright", { year })}</span>
           <div className="flex items-center gap-6">
-            <span>Made with ♡</span>
+            <span>{t("footer.madeWith")}</span>
             <button
               onClick={scrollTop}
               onMouseEnter={() => setCursor("hover-link")}
               onMouseLeave={() => setCursor("default")}
               className="flex items-center gap-2 transition-colors hover:text-accent"
-              aria-label="返回顶部"
+              aria-label={t("footer.top")}
             >
               <ArrowUp size={14} />
-              <span>Top</span>
+              <span>{t("footer.top")}</span>
             </button>
           </div>
         </div>

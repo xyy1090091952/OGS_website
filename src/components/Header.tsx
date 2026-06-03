@@ -12,17 +12,21 @@ import { useUIStore } from "@/store/uiStore";
 import { ANCHORS, ROUTES, EASE } from "@/constants";
 import { cn } from "@/lib/utils";
 import { useScrolled } from "@/hooks/useScrolled";
+import { useT, type DictKey } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeColorPicker from "@/components/ThemeColorPicker";
 
-// 导航项配置（常量化避免硬编码）
-const NAV_ITEMS = [
-  { label: "首页", anchor: ANCHORS.HOME },
-  { label: "关于", anchor: ANCHORS.ABOUT },
-  { label: "作品", anchor: ANCHORS.WORKS },
-  { label: "联系", anchor: ANCHORS.CONTACT },
+// 导航项配置（label 改为 i18n key，避免硬编码）
+const NAV_ITEMS: { labelKey: DictKey; anchor: string }[] = [
+  { labelKey: "nav.home", anchor: ANCHORS.HOME },
+  { labelKey: "nav.about", anchor: ANCHORS.ABOUT },
+  { labelKey: "nav.works", anchor: ANCHORS.WORKS },
+  { labelKey: "nav.contact", anchor: ANCHORS.CONTACT },
 ];
 
 export default function Header() {
   const { theme, toggleTheme, menuOpen, setMenuOpen, setCursor } = useUIStore();
+  const { t } = useT();
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === ROUTES.HOME;
@@ -88,33 +92,41 @@ export default function Header() {
                   onClick={() => handleNavClick(item.anchor)}
                   onMouseEnter={cursorOnEnter}
                   onMouseLeave={cursorOnLeave}
-                  aria-label={`跳转到 ${item.label} 区域`}
+                  aria-label={t(item.labelKey)}
                   className="group relative font-mono text-xs uppercase tracking-widest"
                 >
                   <span className="mr-2 text-fg/40">0{i + 1}</span>
                   <span className="transition-colors duration-300 group-hover:text-accent">
-                    {item.label}
+                    {t(item.labelKey)}
                   </span>
                 </button>
               </li>
             ))}
           </ul>
 
-          {/* 右侧：主题切换 + 移动端菜单 */}
+          {/* 右侧：语言切换 + 主题色切换 + 主题切换 + 移动端菜单 */}
           <div className="flex items-center gap-2">
+            {/* 桌面端：完整三段语言胶囊 */}
+            <div className="hidden md:block">
+              <LanguageSwitcher compact />
+            </div>
+            {/* 主题色（accent）切换：桌面端显示，移动端在抽屉里显示 */}
+            <div className="hidden md:block">
+              <ThemeColorPicker />
+            </div>
             <button
               onClick={toggleTheme}
               onMouseEnter={cursorOnEnter}
               onMouseLeave={cursorOnLeave}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-fg/20 transition-colors duration-300 hover:bg-fg/5"
-              aria-label="切换主题"
+              aria-label={t("nav.themeAria")}
             >
               {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
             </button>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-fg/20 md:hidden"
-              aria-label="菜单"
+              aria-label={t("nav.menuAria")}
             >
               {menuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -150,11 +162,21 @@ export default function Header() {
                     <span className="mr-3 font-mono text-xs not-italic text-fg/40">
                       0{i + 1}
                     </span>
-                    {item.label}
+                    {t(item.labelKey)}
                   </button>
                 </motion.li>
               ))}
             </ul>
+            {/* 移动端菜单底部：完整语言切换 + 主题色切换 */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, ease: EASE.expo, duration: 0.6 }}
+              className="mt-16 flex items-center gap-3"
+            >
+              <LanguageSwitcher />
+              <ThemeColorPicker />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

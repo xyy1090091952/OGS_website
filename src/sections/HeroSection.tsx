@@ -10,12 +10,14 @@ import { ArrowDown } from "lucide-react";
 import { useProfile } from "@/hooks/useWorks";
 import { ANCHORS, EASE } from "@/constants";
 import { useUIStore } from "@/store/uiStore";
+import { useT } from "@/lib/i18n";
 
 export default function HeroSection() {
   const profile = useProfile();
   const setCursor = useUIStore((s) => s.setCursor);
+  const { t } = useT();
 
-  // 把 slogan 拆成单词，做逐词浮入
+  // 把 slogan 拆成单词，做逐词浮入（slogan 始终为英文，便于动画）
   const words = profile.slogan.split(" ");
 
   const scrollToNext = () => {
@@ -29,14 +31,10 @@ export default function HeroSection() {
       id={ANCHORS.HOME}
       className="relative flex min-h-[100svh] items-end overflow-hidden pb-16 pt-32 md:items-center md:pb-12 md:pt-24"
     >
-      {/* 背景：径向渐变 + 噪点 */}
+      {/* 背景：双色径向渐变光晕（跟随主题色 + 辅色）+ 噪点 */}
       <div
-        className="pointer-events-none absolute inset-0 -z-10"
+        className="bg-aurora-hero pointer-events-none absolute inset-0 -z-10"
         aria-hidden
-        style={{
-          background:
-            "radial-gradient(120% 80% at 80% 0%, rgb(var(--accent) / 0.18) 0%, transparent 60%), radial-gradient(80% 50% at 0% 100%, rgb(var(--accent) / 0.10) 0%, transparent 60%)",
-        }}
       />
       <div className="bg-grain absolute inset-0 -z-10" aria-hidden />
 
@@ -49,7 +47,7 @@ export default function HeroSection() {
           className="mb-6 flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-fg/60 md:mb-10"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          Independent Designer · Since 2016
+          {t("hero.tag")}
         </motion.div>
 
         {/* 主标题：逐词浮入 */}
@@ -82,16 +80,17 @@ export default function HeroSection() {
           </span>
         </h1>
 
-        {/* 副标题 */}
+        {/* 副标题（多语言） */}
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: EASE.expo, delay: 0.95 }}
           className="mt-8 max-w-md text-base leading-relaxed text-fg/70 md:mt-12 md:max-w-lg md:text-lg"
         >
-          独立设计师，聚焦于 <span className="text-fg">体验设计</span> 与{" "}
-          <span className="text-fg">创意设计</span>。
-          致力于做"实用主义"的设计——好看、好用，并且让人会心一笑。
+          {t("hero.subBefore")}{" "}
+          <span className="text-fg">{t("hero.subUx")}</span> {t("hero.subAnd")}{" "}
+          <span className="text-fg">{t("hero.subCreative")}</span>
+          {t("hero.subAfter")}
         </motion.p>
 
         {/* 底部信息行 */}
@@ -111,13 +110,13 @@ export default function HeroSection() {
             <span className="flex h-10 w-10 items-center justify-center rounded-full border border-fg/30 transition-colors group-hover:border-fg">
               <ArrowDown size={14} className="animate-bounceY" />
             </span>
-            Scroll to explore
+            {t("hero.scroll")}
           </button>
 
           {/* 角标信息 */}
           <div className="hidden flex-col text-right text-xs uppercase tracking-widest text-fg/40 md:flex">
             <span>{profile.handle}</span>
-            <span className="mt-1">Portfolio · 2024 / 25</span>
+            <span className="mt-1">{t("hero.portfolio")}</span>
           </div>
         </motion.div>
       </div>

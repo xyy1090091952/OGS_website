@@ -22,6 +22,8 @@ export default {
         fg: "rgb(var(--fg) / <alpha-value>)",
         muted: "rgb(var(--muted) / <alpha-value>)",
         accent: "rgb(var(--accent) / <alpha-value>)",
+        // 主题色辅助色，用于双色渐变与点缀
+        "accent-2": "rgb(var(--accent-2) / <alpha-value>)",
         line: "rgb(var(--line) / <alpha-value>)",
         card: "rgb(var(--card) / <alpha-value>)",
       },

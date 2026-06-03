@@ -13,11 +13,14 @@ import Toast from "@/components/Toast";
 import Magnetic from "@/components/Magnetic";
 import { ANCHORS, EASE } from "@/constants";
 import { useUIStore } from "@/store/uiStore";
+// 多语言：t 翻译 UI 文案
+import { useT } from "@/lib/i18n";
 
 export default function ContactSection() {
   const profile = useProfile();
   const setCursor = useUIStore((s) => s.setCursor);
   const [toast, setToast] = useState(false);
+  const { t } = useT();
 
   // 复制邮箱
   const copyEmail = async () => {
@@ -36,24 +39,21 @@ export default function ContactSection() {
       id={ANCHORS.CONTACT}
       className="relative overflow-hidden px-5 py-24 md:px-12 md:py-40"
     >
-      {/* 背景柔和高光 */}
+      {/* 背景柔和高光：双色径向渐变（跟随主题色） */}
       <div
-        className="pointer-events-none absolute inset-0 -z-10"
+        className="bg-aurora-contact pointer-events-none absolute inset-0 -z-10"
         aria-hidden
-        style={{
-          background:
-            "radial-gradient(60% 50% at 50% 100%, rgb(var(--accent) / 0.15) 0%, transparent 70%)",
-        }}
       />
 
       <div className="ogs-container">
         <SectionHeader
           num="04"
-          tag="Get In Touch"
+          tag={t("contact.tag")}
           title={
             <>
-              喜欢就
-              <span className="italic text-accent"> 来聊聊 </span>?
+              {t("contact.titleA")}
+              <span className="italic text-accent"> {t("contact.titleB")} </span>
+              {t("contact.titleC")}
             </>
           }
         />
@@ -73,7 +73,7 @@ export default function ContactSection() {
             className="group block w-full text-left"
           >
             <div className="font-mono text-xs uppercase tracking-widest text-fg/40">
-              Email · Click to copy
+              {t("contact.emailLabel")}
             </div>
             <div className="mt-3 flex items-center gap-3">
               <span className="font-display text-[10vw] leading-none tracking-tightest transition-colors duration-500 group-hover:text-accent md:text-[8vw]">
@@ -124,11 +124,11 @@ export default function ContactSection() {
           className="mt-16 flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-fg/40"
         >
           <span className="h-px w-8 bg-fg/20" />
-          P.S. 我也喜欢看猫的视频，欢迎一起分享。
+          {t("contact.ps")}
         </motion.div>
       </div>
 
-      <Toast visible={toast} message="邮箱已复制 · 期待你的消息" />
+      <Toast visible={toast} message={t("contact.copied")} />
     </section>
   );
 }

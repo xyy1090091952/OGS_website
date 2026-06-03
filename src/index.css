@@ -3,24 +3,27 @@
 @tailwind utilities;
 
 /* ============== 主题变量（CSS Variables 驱动深浅色） ============== */
+/* 实际颜色由 useApplyTheme hook 在运行时根据 accent 主题写入；这里仅作 fallback */
 :root {
-  /* 亮色主题：暖米白底 + 近黑 + 炙橙强调 */
-  --bg: 244 241 236; /* #F4F1EC */
-  --fg: 17 17 17; /* #111111 */
-  --muted: 156 163 175; /* #9CA3AF */
-  --accent: 255 87 34; /* #FF5722 */
-  --line: 18 18 18; /* 用于 1px 描边（叠加 alpha） */
-  --card: 255 255 255;
+  /* 亮色主题默认（sunset）：暖米白底 + 近黑 + 炙橙强调 */
+  --bg: 246 240 232;
+  --fg: 28 22 18;
+  --muted: 156 163 175;
+  --accent: 255 87 34;       /* 主强调色 */
+  --accent-2: 255 196 161;   /* 辅强调色（双色渐变第二点） */
+  --line: 18 18 18;
+  --card: 255 251 246;
 }
 
 .dark {
-  /* 暗色主题：近黑底 + 浅灰 + 暖琥珀强调 */
-  --bg: 14 14 16; /* #0E0E10 */
-  --fg: 237 237 237; /* #EDEDED */
+  /* 暗色主题默认（sunset）：暖夜黑底 + 暖月白 + 暖琥珀强调 */
+  --bg: 20 16 14;
+  --fg: 240 232 222;
   --muted: 148 148 152;
-  --accent: 255 179 71; /* #FFB347 */
+  --accent: 255 179 71;
+  --accent-2: 255 138 107;
   --line: 237 237 237;
-  --card: 22 22 26;
+  --card: 30 24 22;
 }
 
 /* ============== 基础排版 ============== */
@@ -40,6 +43,15 @@ body {
   /* 主题切换时的过渡 */
   transition: background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
     color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 主题色切换的全局柔和过渡：让 bg-accent / text-accent / border-accent 切换时不"硬切" */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 0.45s;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* 选中色 */
@@ -117,6 +129,46 @@ body {
     -webkit-text-stroke: 1px rgb(var(--fg));
     color: transparent;
   }
+}
+
+/* ============== 主题渐变背景（参考 base44 的双色柔光） ============== */
+/* Hero 背景：右上主光 + 左下辅光 + 顶部细微薄雾，构成空气感 */
+.bg-aurora-hero {
+  background:
+    radial-gradient(60% 50% at 82% 8%, rgb(var(--accent) / 0.28) 0%, transparent 60%),
+    radial-gradient(45% 40% at 8% 92%, rgb(var(--accent-2) / 0.32) 0%, transparent 65%),
+    radial-gradient(80% 60% at 50% -20%, rgb(var(--accent-2) / 0.10) 0%, transparent 70%);
+}
+.dark .bg-aurora-hero {
+  /* 暗色下颜色更亮但透明度略降，避免发糊 */
+  background:
+    radial-gradient(60% 50% at 82% 8%, rgb(var(--accent) / 0.22) 0%, transparent 60%),
+    radial-gradient(45% 40% at 8% 92%, rgb(var(--accent-2) / 0.18) 0%, transparent 65%),
+    radial-gradient(80% 60% at 50% -20%, rgb(var(--accent) / 0.08) 0%, transparent 70%);
+}
+
+/* Contact 背景：底部大柔光，更聚焦 */
+.bg-aurora-contact {
+  background:
+    radial-gradient(60% 50% at 30% 100%, rgb(var(--accent) / 0.22) 0%, transparent 65%),
+    radial-gradient(50% 40% at 80% 100%, rgb(var(--accent-2) / 0.28) 0%, transparent 70%);
+}
+.dark .bg-aurora-contact {
+  background:
+    radial-gradient(60% 50% at 30% 100%, rgb(var(--accent) / 0.18) 0%, transparent 65%),
+    radial-gradient(50% 40% at 80% 100%, rgb(var(--accent-2) / 0.16) 0%, transparent 70%);
+}
+
+/* About 背景：左上 + 右下，对角呼应 */
+.bg-aurora-about {
+  background:
+    radial-gradient(40% 35% at 0% 0%, rgb(var(--accent-2) / 0.20) 0%, transparent 65%),
+    radial-gradient(45% 35% at 100% 100%, rgb(var(--accent) / 0.16) 0%, transparent 70%);
+}
+.dark .bg-aurora-about {
+  background:
+    radial-gradient(40% 35% at 0% 0%, rgb(var(--accent-2) / 0.14) 0%, transparent 65%),
+    radial-gradient(45% 35% at 100% 100%, rgb(var(--accent) / 0.12) 0%, transparent 70%);
 }
 
 /* 关闭某些用户偏好下的复杂动画 */

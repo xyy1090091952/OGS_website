@@ -12,6 +12,8 @@ import { useHasHover, useIsDesktop } from "@/hooks/useMediaQuery";
 import { ROUTES, EASE } from "@/constants";
 import type { Work } from "@/data/types";
 import { cn } from "@/lib/utils";
+// 多语言 hook：从 LocalizedText 中按当前语言取值
+import { useT } from "@/lib/i18n";
 
 interface WorkCardProps {
   work: Work;
@@ -30,6 +32,10 @@ export default function WorkCard({ work, parallax = 0 }: WorkCardProps) {
   const setCursor = useUIStore((s) => s.setCursor);
   const hasHover = useHasHover();
   const isDesktop = useIsDesktop();
+  // 多语言：从 LocalizedText 中按当前语言取值
+  const { pick } = useT();
+  const title = pick(work.title) as string;
+  const summary = pick(work.summary) as string;
 
   // 监听卡片相对于视口的滚动进度（0 = 进入视口；1 = 离开视口）
   const { scrollYProgress } = useScroll({
@@ -65,7 +71,7 @@ export default function WorkCard({ work, parallax = 0 }: WorkCardProps) {
           >
             <motion.img
               src={work.cover}
-              alt={work.title}
+              alt={title}
               loading="lazy"
               className="h-full w-full object-cover"
               initial={{ scale: 1.05 }}
@@ -87,9 +93,9 @@ export default function WorkCard({ work, parallax = 0 }: WorkCardProps) {
           <div className="mt-5 flex items-start justify-between gap-4">
             <div>
               <h3 className="font-display text-xl tracking-tight transition-colors duration-300 group-hover:text-accent md:text-2xl">
-                {work.title}
+                {title}
               </h3>
-              <p className="mt-1 text-sm text-fg/60">{work.summary}</p>
+              <p className="mt-1 text-sm text-fg/60">{summary}</p>
             </div>
             <span className="shrink-0 font-mono text-xs uppercase tracking-widest text-fg/40">
               {work.year}

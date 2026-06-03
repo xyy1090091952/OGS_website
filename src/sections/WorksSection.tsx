@@ -13,20 +13,22 @@ import { ANCHORS, EASE } from "@/constants";
 import { WORK_CATEGORIES, type WorkCategory } from "@/data/types";
 import { useUIStore } from "@/store/uiStore";
 import { cn } from "@/lib/utils";
+import { useT, type DictKey } from "@/lib/i18n";
 
-// 分类顺序（常量化）
-const CATEGORY_LIST: { key: WorkCategory; label: string }[] = [
-  { key: WORK_CATEGORIES.ALL, label: "全部" },
-  { key: WORK_CATEGORIES.UIUX, label: "UI/UX" },
-  { key: WORK_CATEGORIES.ANIMATION, label: "Motion" },
-  { key: WORK_CATEGORIES.VIDEO, label: "Video" },
-  { key: WORK_CATEGORIES.GRAPHIC, label: "Graphic" },
+// 分类顺序（label 改为 i18n key，避免硬编码）
+const CATEGORY_LIST: { key: WorkCategory; labelKey: DictKey }[] = [
+  { key: WORK_CATEGORIES.ALL, labelKey: "works.cat.all" },
+  { key: WORK_CATEGORIES.UIUX, labelKey: "works.cat.uiux" },
+  { key: WORK_CATEGORIES.ANIMATION, labelKey: "works.cat.motion" },
+  { key: WORK_CATEGORIES.VIDEO, labelKey: "works.cat.video" },
+  { key: WORK_CATEGORIES.GRAPHIC, labelKey: "works.cat.graphic" },
 ];
 
 export default function WorksSection() {
   const [active, setActive] = useState<WorkCategory>(WORK_CATEGORIES.ALL);
   const works = useWorks(active);
   const setCursor = useUIStore((s) => s.setCursor);
+  const { t } = useT();
 
   return (
     <section
@@ -37,13 +39,13 @@ export default function WorksSection() {
       <div className="ogs-container">
         <SectionHeader
           num="02"
-          tag="Selected Works"
+          tag={t("works.tag")}
           title={
             <>
-              一些近期觉得
-              <span className="italic text-accent"> 还不错 </span>
+              {t("works.titleA")}
+              <span className="italic text-accent"> {t("works.titleB")} </span>
               <br className="hidden md:block" />
-              的作品。
+              {t("works.titleC")}
             </>
           }
         />
@@ -59,24 +61,30 @@ export default function WorksSection() {
                 onMouseEnter={() => setCursor("hover-link")}
                 onMouseLeave={() => setCursor("default")}
                 className={cn(
-                  "relative rounded-full px-4 py-2 font-mono text-xs uppercase tracking-widest transition-colors duration-300",
-                  isActive ? "text-bg" : "text-fg/60 hover:text-fg"
+                  // 基础样式：圆角胶囊；选中时直接给 bg-fg + text-bg，避免依赖底层 motion 元素加载顺序
+                  "relative isolate overflow-hidden rounded-full px-4 py-2 font-mono text-xs uppercase tracking-widest transition-colors duration-300",
+                  isActive
+                    ? "bg-fg text-bg"
+                    : "text-fg/60 hover:text-fg"
                 )}
               >
-                {/* 选中态背景：使用 layoutId 实现平滑滑动 */}
+                {/* 选中态使用 layoutId 平滑滑动指示器；放在按钮文字下层做高光 */}
                 {isActive && (
                   <motion.span
                     layoutId="cat-pill"
+                    aria-hidden
                     className="absolute inset-0 -z-10 rounded-full bg-fg"
+                    // 初次进入不动画，避免出现"指示器还没到位 → 文字消失"的视觉空白
+                    initial={false}
                     transition={{ duration: 0.5, ease: EASE.expo }}
                   />
                 )}
-                {c.label}
+                {t(c.labelKey)}
               </button>
             );
           })}
           <div className="ml-auto hidden font-mono text-xs uppercase tracking-widest text-fg/40 md:block">
-            {String(works.length).padStart(2, "0")} Projects
+            {String(works.length).padStart(2, "0")} {t("works.projects")}
           </div>
         </div>
 

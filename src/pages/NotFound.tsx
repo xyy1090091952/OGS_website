@@ -5,8 +5,11 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { ROUTES, EASE } from "@/constants";
+// 多语言：t 翻译 UI 文案
+import { useT } from "@/lib/i18n";
 
 export default function NotFound() {
+  const { t } = useT();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-5 text-center">
       <motion.div
@@ -23,10 +26,10 @@ export default function NotFound() {
         transition={{ duration: 0.6, delay: 0.3 }}
         className="mt-6 max-w-sm text-fg/70"
       >
-        这一页迷路了。也许是猫把它叼走了。
+        {t("nf.desc")}
       </motion.p>
       <Link to={ROUTES.HOME} className="btn-outline mt-10">
-        <ArrowLeft size={14} /> 回到首页
+        <ArrowLeft size={14} /> {t("nf.backHome")}
       </Link>
     </div>
   );
