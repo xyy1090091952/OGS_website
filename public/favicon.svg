@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- 暖米白底 -->
+  <rect width="32" height="32" rx="8" fill="#F4F1EC"/>
+  <!-- 眼镜外形：致敬 Old_glasses -->
+  <g fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round">
+    <circle cx="11" cy="18" r="5"/>
+    <circle cx="22" cy="18" r="5"/>
+    <line x1="16" y1="18" x2="17" y2="18"/>
+  </g>
+  <!-- 装饰点：炙橙强调色 -->
+  <circle cx="11" cy="18" r="1.6" fill="#FF5722"/>
+</svg>
