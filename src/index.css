@@ -131,44 +131,100 @@ body {
   }
 }
 
-/* ============== 主题渐变背景（参考 base44 的双色柔光） ============== */
-/* Hero 背景：右上主光 + 左下辅光 + 顶部细微薄雾，构成空气感 */
+/* ============== 主题渐变背景（参考 base44 的"通铺鲜活色块"） ============== */
+/* 设计原则：
+   1. 每段整体通铺一个主色调（用 linear-gradient 全覆盖，高透明度 0.55~0.85）
+   2. 段落之间强对比：Hero 蓝/桃 → About 粉紫 → Works 灰 → Services 暖 → Contact 重橙
+   3. 顶层再叠 1~2 个对角大光球做立体感
+   4. 暗色模式下整体降一档，但仍保留通铺感，不发糊
+*/
+
+/* ---------- Hero：整屏淡桃/蓝染色 + 底部强橙色带（对应 base44 首屏） ---------- */
 .bg-aurora-hero {
   background:
-    radial-gradient(60% 50% at 82% 8%, rgb(var(--accent) / 0.28) 0%, transparent 60%),
-    radial-gradient(45% 40% at 8% 92%, rgb(var(--accent-2) / 0.32) 0%, transparent 65%),
-    radial-gradient(80% 60% at 50% -20%, rgb(var(--accent-2) / 0.10) 0%, transparent 70%);
+    /* 底部强色带：accent 主色，与下一段衔接 */
+    linear-gradient(180deg, transparent 60%, rgb(var(--accent) / 0.45) 88%, rgb(var(--accent) / 0.55) 100%),
+    /* 右侧大光球：主色 */
+    radial-gradient(60% 70% at 100% 30%, rgb(var(--accent) / 0.55) 0%, transparent 60%),
+    /* 左侧大光球：辅色 */
+    radial-gradient(60% 70% at 0% 70%, rgb(var(--accent-2) / 0.70) 0%, transparent 60%),
+    /* 整屏通铺底色：辅色淡铺（让画面整体被"染" 一层柔色） */
+    linear-gradient(180deg, rgb(var(--accent-2) / 0.55) 0%, rgb(var(--accent-2) / 0.30) 60%, transparent 100%);
 }
 .dark .bg-aurora-hero {
-  /* 暗色下颜色更亮但透明度略降，避免发糊 */
   background:
-    radial-gradient(60% 50% at 82% 8%, rgb(var(--accent) / 0.22) 0%, transparent 60%),
-    radial-gradient(45% 40% at 8% 92%, rgb(var(--accent-2) / 0.18) 0%, transparent 65%),
-    radial-gradient(80% 60% at 50% -20%, rgb(var(--accent) / 0.08) 0%, transparent 70%);
+    linear-gradient(180deg, transparent 60%, rgb(var(--accent) / 0.30) 88%, rgb(var(--accent) / 0.36) 100%),
+    radial-gradient(60% 70% at 100% 30%, rgb(var(--accent) / 0.32) 0%, transparent 60%),
+    radial-gradient(60% 70% at 0% 70%, rgb(var(--accent-2) / 0.40) 0%, transparent 60%),
+    linear-gradient(180deg, rgb(var(--accent-2) / 0.30) 0%, rgb(var(--accent-2) / 0.16) 60%, transparent 100%);
 }
 
-/* Contact 背景：底部大柔光，更聚焦 */
-.bg-aurora-contact {
-  background:
-    radial-gradient(60% 50% at 30% 100%, rgb(var(--accent) / 0.22) 0%, transparent 65%),
-    radial-gradient(50% 40% at 80% 100%, rgb(var(--accent-2) / 0.28) 0%, transparent 70%);
-}
-.dark .bg-aurora-contact {
-  background:
-    radial-gradient(60% 50% at 30% 100%, rgb(var(--accent) / 0.18) 0%, transparent 65%),
-    radial-gradient(50% 40% at 80% 100%, rgb(var(--accent-2) / 0.16) 0%, transparent 70%);
-}
-
-/* About 背景：左上 + 右下，对角呼应 */
+/* ---------- About：整屏粉紫通铺（对应 base44 use-cases 第二屏）---------- */
 .bg-aurora-about {
   background:
-    radial-gradient(40% 35% at 0% 0%, rgb(var(--accent-2) / 0.20) 0%, transparent 65%),
-    radial-gradient(45% 35% at 100% 100%, rgb(var(--accent) / 0.16) 0%, transparent 70%);
+    /* 中央大光球加深 */
+    radial-gradient(80% 60% at 50% 50%, rgb(var(--accent-2) / 0.55) 0%, transparent 70%),
+    /* 左下主色光斑 */
+    radial-gradient(50% 50% at 0% 100%, rgb(var(--accent) / 0.40) 0%, transparent 60%),
+    /* 右上主色光斑 */
+    radial-gradient(50% 50% at 100% 0%, rgb(var(--accent) / 0.35) 0%, transparent 60%),
+    /* 整屏通铺辅色（高饱和） */
+    linear-gradient(135deg, rgb(var(--accent-2) / 0.60) 0%, rgb(var(--accent-2) / 0.45) 100%);
 }
 .dark .bg-aurora-about {
   background:
-    radial-gradient(40% 35% at 0% 0%, rgb(var(--accent-2) / 0.14) 0%, transparent 65%),
-    radial-gradient(45% 35% at 100% 100%, rgb(var(--accent) / 0.12) 0%, transparent 70%);
+    radial-gradient(80% 60% at 50% 50%, rgb(var(--accent-2) / 0.30) 0%, transparent 70%),
+    radial-gradient(50% 50% at 0% 100%, rgb(var(--accent) / 0.22) 0%, transparent 60%),
+    radial-gradient(50% 50% at 100% 0%, rgb(var(--accent) / 0.20) 0%, transparent 60%),
+    linear-gradient(135deg, rgb(var(--accent-2) / 0.30) 0%, rgb(var(--accent-2) / 0.20) 100%);
+}
+
+/* ---------- Services：暖色通铺过渡（衔接 Works 灰 → Contact 重橙）---------- */
+.bg-aurora-section {
+  background:
+    radial-gradient(60% 60% at 80% 50%, rgb(var(--accent) / 0.45) 0%, transparent 65%),
+    radial-gradient(60% 60% at 20% 50%, rgb(var(--accent-2) / 0.55) 0%, transparent 65%),
+    /* 整屏通铺：从左 accent-2 渐变到右 accent，色彩自然流动 */
+    linear-gradient(90deg, rgb(var(--accent-2) / 0.40) 0%, rgb(var(--accent) / 0.30) 100%);
+}
+.dark .bg-aurora-section {
+  background:
+    radial-gradient(60% 60% at 80% 50%, rgb(var(--accent) / 0.24) 0%, transparent 65%),
+    radial-gradient(60% 60% at 20% 50%, rgb(var(--accent-2) / 0.28) 0%, transparent 65%),
+    linear-gradient(90deg, rgb(var(--accent-2) / 0.20) 0%, rgb(var(--accent) / 0.16) 100%);
+}
+
+/* ---------- Contact：CTA 重色块（对应 base44 "So what are we building" 第四屏）---------- */
+.bg-aurora-contact {
+  background:
+    /* 顶部一抹 bg 柔白：避免标题被颜色淹没 */
+    linear-gradient(180deg, rgb(var(--bg) / 0.75) 0%, transparent 22%),
+    /* 左下大光球：辅色饱和 */
+    radial-gradient(55% 65% at 0% 100%, rgb(var(--accent-2) / 0.85) 0%, transparent 60%),
+    /* 右下大光球：辅色饱和 */
+    radial-gradient(55% 65% at 100% 100%, rgb(var(--accent-2) / 0.80) 0%, transparent 60%),
+    /* 整屏铺主色重色块 */
+    linear-gradient(180deg, rgb(var(--accent) / 0.55) 0%, rgb(var(--accent) / 0.85) 100%);
+}
+.dark .bg-aurora-contact {
+  background:
+    linear-gradient(180deg, rgb(var(--bg) / 0.75) 0%, transparent 22%),
+    radial-gradient(55% 65% at 0% 100%, rgb(var(--accent-2) / 0.45) 0%, transparent 60%),
+    radial-gradient(55% 65% at 100% 100%, rgb(var(--accent-2) / 0.40) 0%, transparent 60%),
+    linear-gradient(180deg, rgb(var(--accent) / 0.30) 0%, rgb(var(--accent) / 0.45) 100%);
+}
+
+/* ---------- Works 区：浅色点阵网格（中性留白节奏点）---------- */
+.bg-grid-dot {
+  /* 通铺一层极淡的 fg，让 Works 段比首页底色稍微"暗"一点点，作为节奏对比 */
+  background-color: rgb(var(--fg) / 0.025);
+  background-image: radial-gradient(rgb(var(--fg) / 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: 0 0;
+}
+.dark .bg-grid-dot {
+  background-color: rgb(var(--fg) / 0.02);
+  background-image: radial-gradient(rgb(var(--fg) / 0.10) 1px, transparent 1px);
 }
 
 /* 关闭某些用户偏好下的复杂动画 */

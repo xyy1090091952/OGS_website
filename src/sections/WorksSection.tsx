@@ -33,8 +33,13 @@ export default function WorksSection() {
   return (
     <section
       id={ANCHORS.WORKS}
-      className="relative px-5 py-24 md:px-12 md:py-40"
+      className="relative overflow-hidden px-5 py-24 md:px-12 md:py-40"
     >
+      {/* 背景：点阵网格（中性留白，与上下彩色段落形成节奏对比） */}
+      <div
+        className="bg-grid-dot pointer-events-none absolute inset-0 -z-10 opacity-60"
+        aria-hidden
+      />
       {/* 顶部分隔线 */}
       <div className="ogs-container">
         <SectionHeader

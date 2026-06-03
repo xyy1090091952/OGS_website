@@ -48,66 +48,66 @@ export interface AccentPreset {
 // ==================== 主题预设字典 ====================
 // RGB 用空格分隔的字符串，与 CSS 变量格式一致：rgb(var(--accent))
 export const ACCENTS: Record<AccentId, AccentPreset> = {
-  // ----- 1. Sunset 暖橙 + 蜜桃 -----
+  // ----- 1. Sunset 暖橙 + 蜜桃（默认，对应 base44 暖橙气质）-----
   sunset: {
     id: "sunset",
     label: "Sunset",
-    swatch: { from: "#FF5722", to: "#FFC4A1" },
+    swatch: { from: "#FF5722", to: "#FFB37A" },
     light: {
       accent: "255 87 34",   // #FF5722 炙橙
-      accent2: "255 196 161", // #FFC4A1 蜜桃
-      bg: "246 240 232",     // #F6F0E8 暖米白
+      accent2: "255 179 122", // #FFB37A 蜜桃（提亮一档，让通铺更鲜活）
+      bg: "247 241 232",     // #F7F1E8 暖米白
       fg: "28 22 18",        // #1C1612 偏暖深棕
       card: "255 251 246",   // #FFFBF6 米白
     },
     dark: {
-      accent: "255 179 71",  // #FFB347 暖琥珀
-      accent2: "255 138 107", // #FF8A6B 珊瑚
+      accent: "255 159 64",  // #FF9F40 暖橙（提饱和）
+      accent2: "255 122 87", // #FF7A57 珊瑚（提饱和）
       bg: "20 16 14",        // #14100E 暖夜黑
       fg: "240 232 222",     // #F0E8DE 暖月白
       card: "30 24 22",      // #1E1816
     },
   },
 
-  // ----- 2. Forest 鼠尾草 + 米杏（base44 同款气质）-----
+  // ----- 2. Forest 鼠尾草 + 暖米杏（自然 + 高级感）-----
   forest: {
     id: "forest",
     label: "Forest",
-    swatch: { from: "#5C8D6E", to: "#D9C7A1" },
+    swatch: { from: "#4F8B66", to: "#E8C49A" },
     light: {
-      accent: "92 141 110",  // #5C8D6E 鼠尾草绿
-      accent2: "217 199 161", // #D9C7A1 米杏
-      bg: "242 240 232",     // #F2F0E8 灰米白（带绿调）
-      fg: "26 30 26",        // #1A1E1A 偏冷深绿黑
-      card: "252 251 246",   // #FCFBF6
+      accent: "79 139 102",  // #4F8B66 鼠尾草绿（更深更绿）
+      accent2: "232 196 154", // #E8C49A 暖米杏（提饱和，绿与暖杏对比更鲜活）
+      bg: "242 240 232",     // #F2F0E8
+      fg: "26 30 26",        // #1A1E1A
+      card: "252 251 246",
     },
     dark: {
-      accent: "156 201 168", // #9CC9A8 薄荷
-      accent2: "201 179 147", // #C9B393 暖沙
-      bg: "16 18 16",        // #101210 林夜黑
-      fg: "232 234 226",     // #E8EAE2
-      card: "24 28 24",      // #181C18
+      accent: "130 200 158", // #82C89E 薄荷（提亮）
+      accent2: "224 184 130", // #E0B882 暖沙（提饱和）
+      bg: "16 18 16",
+      fg: "232 234 226",
+      card: "24 28 24",
     },
   },
 
-  // ----- 3. Ocean 雾蓝 + 淡紫 -----
+  // ----- 3. Ocean 雾蓝 + 玫粉紫（base44 第二屏粉紫同款气质）-----
   ocean: {
     id: "ocean",
     label: "Ocean",
-    swatch: { from: "#5B7FE0", to: "#B5A7E8" },
+    swatch: { from: "#4F7BFF", to: "#E5A8E8" },
     light: {
-      accent: "91 127 224",  // #5B7FE0 雾蓝
-      accent2: "181 167 232", // #B5A7E8 淡紫
-      bg: "238 240 246",     // #EEF0F6 冷米白
-      fg: "20 22 32",        // #141620 偏冷深靛
-      card: "250 251 254",   // #FAFBFE
+      accent: "79 123 255",  // #4F7BFF 海蓝（提饱和）
+      accent2: "229 168 232", // #E5A8E8 玫粉紫（base44 use-cases 同款粉紫，更鲜艳）
+      bg: "239 240 246",     // #EFF0F6 冷米白
+      fg: "20 22 32",
+      card: "250 251 254",
     },
     dark: {
-      accent: "155 177 255", // #9BB1FF 北极蓝
-      accent2: "200 183 255", // #C8B7FF 雾紫
-      bg: "12 14 22",        // #0C0E16 海夜黑
-      fg: "228 230 240",     // #E4E6F0
-      card: "20 22 32",      // #141620
+      accent: "130 160 255", // #82A0FF 北极蓝（提亮）
+      accent2: "224 168 232", // #E0A8E8 雾紫（提饱和）
+      bg: "12 14 22",
+      fg: "228 230 240",
+      card: "20 22 32",
     },
   },
 };

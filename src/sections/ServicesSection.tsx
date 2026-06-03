@@ -21,7 +21,12 @@ export default function ServicesSection() {
   const clientsLoop = [...clients, ...clients];
 
   return (
-    <section className="relative px-5 py-24 md:px-12 md:py-40">
+    <section className="relative overflow-hidden px-5 py-24 md:px-12 md:py-40">
+      {/* 背景：左右双色染色渐变（与上下段落自然衔接） */}
+      <div
+        className="bg-aurora-section pointer-events-none absolute inset-0 -z-10"
+        aria-hidden
+      />
       <div className="ogs-container">
         <SectionHeader
           num="03"
