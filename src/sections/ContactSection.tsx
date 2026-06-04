@@ -4,8 +4,8 @@
  * - 社交链接
  * - 底部彩蛋小动画
  */
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef } from "react";
+import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import { Copy, ArrowUpRight } from "lucide-react";
 import { useProfile } from "@/hooks/useWorks";
 import SectionHeader from "@/components/SectionHeader";
@@ -15,6 +15,87 @@ import { ANCHORS, EASE } from "@/constants";
 import { useUIStore } from "@/store/uiStore";
 // 多语言：t 翻译 UI 文案
 import { useT } from "@/lib/i18n";
+// useHasHover：仅 hover 设备启用鼠标交互
+import { useHasHover } from "@/hooks/useMediaQuery";
+
+// 社交链接的类型（来自 profile.socials 的元素）
+type SocialItem = {
+  label: string;
+  url: string;
+};
+
+/**
+ * 单张社交卡片（带鼠标跟随高光）
+ *  - 抽出子组件是为了能在每张卡里独立调用 useMotionValue（hooks 必须在组件顶层）
+ *  - 鼠标移动时，在卡片内绘制一个跟随鼠标的柔和径向光晕
+ */
+function SocialCard({
+  item,
+  index,
+}: {
+  item: SocialItem;
+  index: number;
+}) {
+  const setCursor = useUIStore((s) => s.setCursor);
+  const hasHover = useHasHover();
+  const cardRef = useRef<HTMLAnchorElement>(null);
+
+  // 鼠标在卡片内的相对坐标（默认放到 -1000 远离屏幕，避免初始就显示）
+  const mx = useMotionValue(-1000);
+  const my = useMotionValue(-1000);
+  // 拼接 radial-gradient：让光晕中心跟随鼠标
+  const spotlight = useMotionTemplate`radial-gradient(220px circle at ${mx}px ${my}px, rgb(var(--accent) / 0.22), transparent 70%)`;
+
+  // 鼠标移动：更新光晕中心
+  const handleMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    mx.set(e.clientX - rect.left);
+    my.set(e.clientY - rect.top);
+  };
+  // 鼠标离开：把光晕推回 -1000（视觉上"消失"）
+  const handleLeave = () => {
+    mx.set(-1000);
+    my.set(-1000);
+    setCursor("default");
+  };
+
+  return (
+    <Magnetic strength={0.15}>
+      <motion.a
+        ref={cardRef}
+        href={item.url}
+        target="_blank"
+        rel="noreferrer"
+        onMouseEnter={() => setCursor("hover-link")}
+        onMouseLeave={handleLeave}
+        onMouseMove={hasHover ? handleMove : undefined}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: EASE.expo, delay: index * 0.08 }}
+        className="group relative flex h-32 items-end justify-between overflow-hidden bg-bg p-6 transition-colors duration-300 hover:bg-card"
+      >
+        {/* 跟随鼠标的高光层（仅 hover 设备）；放在内容下面（z-0），不影响点击 */}
+        {hasHover && (
+          <motion.span
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{ backgroundImage: spotlight }}
+          />
+        )}
+        {/* 内容层（z-10 浮在高光上） */}
+        <span className="relative z-10 font-display text-2xl tracking-tight transition-colors group-hover:text-accent md:text-3xl">
+          {item.label}
+        </span>
+        <ArrowUpRight
+          size={24}
+          className="relative z-10 text-fg/40 transition-all duration-500 ease-expo group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-accent"
+        />
+      </motion.a>
+    </Magnetic>
+  );
+}
 
 export default function ContactSection() {
   const profile = useProfile();
@@ -90,31 +171,10 @@ export default function ContactSection() {
           </button>
         </motion.div>
 
-        {/* 社交链接 */}
+        {/* 社交链接：每张卡都有独立的鼠标跟随高光（SocialCard 子组件） */}
         <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-fg/10 bg-fg/10 sm:grid-cols-2 md:grid-cols-4">
           {profile.socials.map((s, i) => (
-            <Magnetic key={s.label} strength={0.15}>
-              <motion.a
-                href={s.url}
-                target="_blank"
-                rel="noreferrer"
-                onMouseEnter={() => setCursor("hover-link")}
-                onMouseLeave={() => setCursor("default")}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: EASE.expo, delay: i * 0.08 }}
-                className="group relative flex h-32 items-end justify-between bg-bg p-6 transition-colors duration-300 hover:bg-card"
-              >
-                <span className="font-display text-2xl tracking-tight transition-colors group-hover:text-accent md:text-3xl">
-                  {s.label}
-                </span>
-                <ArrowUpRight
-                  size={24}
-                  className="text-fg/40 transition-all duration-500 ease-expo group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-accent"
-                />
-              </motion.a>
-            </Magnetic>
+            <SocialCard key={s.label} item={s} index={i} />
           ))}
         </div>
 

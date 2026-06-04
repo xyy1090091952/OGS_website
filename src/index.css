@@ -238,3 +238,17 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============== Marquee 横向滚动条（CSS 关键帧实现）============== */
+/* 用 CSS 比 framer-motion 更可靠：hover 暂停只需 animation-play-state: paused */
+@keyframes ogs-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ogs-marquee-track {
+  animation: ogs-marquee 35s linear infinite;
+  /* 默认会被父级 hover 暂停（见下面 .ogs-marquee:hover .ogs-marquee-track） */
+}
+.ogs-marquee:hover .ogs-marquee-track {
+  animation-play-state: paused;
+}

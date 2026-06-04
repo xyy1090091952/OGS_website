@@ -143,8 +143,11 @@ export default function AboutSection() {
                     }}
                     className="relative"
                   >
-                    {/* 圆点 */}
-                    <span className="absolute -left-[34px] top-1.5 flex h-3 w-3 items-center justify-center rounded-full border border-fg/30 bg-bg">
+                    {/* 圆点：精确压在 ul 左边线上
+                        ul 用 pl-8 (32px) + border-l，所以圆点中心需要在 -(32 + 圆点半径)
+                        圆点 h-3 w-3 = 12px，半径 6px，故 left = -38px
+                        z-10 确保圆点盖住线，不会被截断 */}
+                    <span className="absolute -left-[38px] top-1.5 z-10 flex h-3 w-3 items-center justify-center rounded-full border border-fg/30 bg-bg">
                       <span className="h-1.5 w-1.5 rounded-full bg-accent" />
                     </span>
                     <div className="font-mono text-xs uppercase tracking-widest text-accent">

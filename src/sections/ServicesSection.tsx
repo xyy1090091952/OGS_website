@@ -3,13 +3,154 @@
  * - 上半部分：4 项核心服务，hover 时关键词浮出
  * - 下半部分：合作品牌墙（横向滚动 marquee）
  */
-import { motion } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
+import { useRef, type MouseEvent as ReactMouseEvent } from "react";
 import { useServices, useClients } from "@/hooks/useWorks";
 import SectionHeader from "@/components/SectionHeader";
 import { EASE } from "@/constants";
 import { useUIStore } from "@/store/uiStore";
 // 多语言：t 翻译 UI 文案，pick 从 LocalizedText 中取当前语言值
 import { useT } from "@/lib/i18n";
+
+/**
+ * 服务卡片内的鼠标跟随高光层
+ * - 父级（motion.div 卡片）传入 mx/my 坐标
+ * - 这里画一个 240px 的径向光晕跟随鼠标
+ * - pointer-events-none，不影响下层 hover 状态
+ */
+function ServiceSpotlight({
+  mx,
+  my,
+}: {
+  mx: ReturnType<typeof useMotionValue<number>>;
+  my: ReturnType<typeof useMotionValue<number>>;
+}) {
+  // 拼出跟随鼠标的径向渐变 CSS
+  const bg = useMotionTemplate`radial-gradient(240px circle at ${mx}px ${my}px, rgb(var(--accent) / 0.22), transparent 70%)`;
+
+  return (
+    <motion.div
+      className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      style={{ backgroundImage: bg }}
+      aria-hidden
+    />
+  );
+}
+
+/**
+ * 单个服务卡片（封装鼠标位置追踪逻辑，避免 services.map 内部钩子规则冲突）
+ */
+function ServiceCard({
+  s,
+  i,
+  isAccentCard,
+  sTitle,
+  sDesc,
+  sBullets,
+  setCursor,
+}: {
+  s: ReturnType<typeof useServices>[number];
+  i: number;
+  isAccentCard: boolean;
+  sTitle: string;
+  sDesc: string;
+  sBullets: string[];
+  setCursor: (variant: "default" | "hover-link" | "hover-card", label?: string) => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  // 鼠标位置（仅普通卡需要，反色卡用不到也无妨）
+  const mx = useMotionValue(-1000);
+  const my = useMotionValue(-1000);
+
+  const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    mx.set(e.clientX - rect.left);
+    my.set(e.clientY - rect.top);
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.7, ease: EASE.expo, delay: i * 0.08 }}
+      onMouseEnter={() => setCursor("hover-link")}
+      onMouseLeave={() => setCursor("default")}
+      onMouseMove={handleMouseMove}
+      className={
+        isAccentCard
+          ? "group relative flex h-80 flex-col overflow-hidden p-6 text-bg transition-all duration-500 md:p-8"
+          : "group relative flex h-80 flex-col overflow-hidden bg-bg p-6 transition-colors duration-500 hover:bg-card md:p-8"
+      }
+      style={
+        isAccentCard ? { backgroundColor: "rgb(var(--accent))" } : undefined
+      }
+    >
+      {/* 顶部编号 */}
+      <div
+        className={
+          isAccentCard
+            ? "relative z-10 font-mono text-xs uppercase tracking-widest text-bg/60"
+            : "relative z-10 font-mono text-xs uppercase tracking-widest text-fg/40"
+        }
+      >
+        {s.num}
+      </div>
+
+      {/* 标题：hover 时上移 */}
+      <h3
+        className={
+          isAccentCard
+            ? "relative z-10 mt-auto font-display text-2xl tracking-tight transition-all duration-500 ease-expo group-hover:-translate-y-1 md:text-3xl"
+            : "relative z-10 mt-auto font-display text-2xl tracking-tight transition-all duration-500 ease-expo group-hover:-translate-y-1 group-hover:text-accent md:text-3xl"
+        }
+      >
+        {sTitle}
+      </h3>
+
+      {/* 描述与关键词共享同一位置：默认显示描述，hover 切换为关键词 */}
+      <div className="relative z-10 mt-2 min-h-[68px]">
+        <p
+          className={
+            isAccentCard
+              ? "absolute inset-0 text-sm text-bg/80 transition-opacity duration-300 group-hover:opacity-0"
+              : "absolute inset-0 text-sm text-fg/60 transition-opacity duration-300 group-hover:opacity-0"
+          }
+        >
+          {sDesc}
+        </p>
+        <div className="pointer-events-none absolute inset-0 flex flex-wrap content-start gap-1.5 opacity-0 transition-opacity duration-500 group-hover:pointer-events-auto group-hover:opacity-100">
+          {sBullets.map((b) => (
+            <span
+              key={b}
+              className={
+                isAccentCard
+                  ? "rounded-full border border-bg/30 bg-bg/15 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-bg/90"
+                  : "rounded-full border border-fg/20 bg-bg/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-fg/70"
+              }
+            >
+              {b}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* 顶角强调点 */}
+      <span
+        className={
+          isAccentCard
+            ? "absolute right-6 top-6 z-10 h-1.5 w-1.5 rounded-full bg-bg opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:right-8 md:top-8"
+            : "absolute right-6 top-6 z-10 h-1.5 w-1.5 rounded-full bg-accent opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:right-8 md:top-8"
+        }
+      />
+
+      {/* 鼠标跟随高光层（仅普通卡，鼠标移动时跟随出现彩色径向光晕） */}
+      {!isAccentCard && <ServiceSpotlight mx={mx} my={my} />}
+    </motion.div>
+  );
+}
 
 export default function ServicesSection() {
   const services = useServices();
@@ -49,88 +190,18 @@ export default function ServicesSection() {
             const sDesc = pick(s.desc) as string;
             const sBullets = pick(s.bullets) as string[];
             // 第一张卡用主题色反色背景，作为视觉跳跃点
-            // （参考 base44 第三屏中央红橙 app 卡的色块处理）
             const isAccentCard = i === 0;
             return (
-            <motion.div
-              key={s.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.7, ease: EASE.expo, delay: i * 0.08 }}
-              onMouseEnter={() => setCursor("hover-link")}
-              onMouseLeave={() => setCursor("default")}
-              className={
-                isAccentCard
-                  ? "group relative flex h-80 flex-col overflow-hidden p-6 text-bg transition-all duration-500 md:p-8"
-                  : "group relative flex h-80 flex-col overflow-hidden bg-bg p-6 transition-colors duration-500 hover:bg-card md:p-8"
-              }
-              style={
-                isAccentCard
-                  ? { backgroundColor: "rgb(var(--accent))" }
-                  : undefined
-              }
-            >
-              {/* 顶部编号 */}
-              <div
-                className={
-                  isAccentCard
-                    ? "font-mono text-xs uppercase tracking-widest text-bg/60"
-                    : "font-mono text-xs uppercase tracking-widest text-fg/40"
-                }
-              >
-                {s.num}
-              </div>
-
-              {/* 标题：hover 时上移 */}
-              <h3
-                className={
-                  isAccentCard
-                    ? "mt-auto font-display text-2xl tracking-tight transition-all duration-500 ease-expo group-hover:-translate-y-1 md:text-3xl"
-                    : "mt-auto font-display text-2xl tracking-tight transition-all duration-500 ease-expo group-hover:-translate-y-1 group-hover:text-accent md:text-3xl"
-                }
-              >
-                {sTitle}
-              </h3>
-
-              {/* 描述与关键词共享同一位置：默认显示描述，hover 切换为关键词 */}
-              <div className="relative mt-2 min-h-[68px]">
-                {/* 默认显示的描述：hover 时淡出 */}
-                <p
-                  className={
-                    isAccentCard
-                      ? "absolute inset-0 text-sm text-bg/80 transition-opacity duration-300 group-hover:opacity-0"
-                      : "absolute inset-0 text-sm text-fg/60 transition-opacity duration-300 group-hover:opacity-0"
-                  }
-                >
-                  {sDesc}
-                </p>
-                {/* hover 时浮出的关键词：默认透明 */}
-                <div className="pointer-events-none absolute inset-0 flex flex-wrap content-start gap-1.5 opacity-0 transition-opacity duration-500 group-hover:pointer-events-auto group-hover:opacity-100">
-                  {sBullets.map((b) => (
-                    <span
-                      key={b}
-                      className={
-                        isAccentCard
-                          ? "rounded-full border border-bg/30 bg-bg/15 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-bg/90"
-                          : "rounded-full border border-fg/20 bg-bg/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-fg/70"
-                      }
-                    >
-                      {b}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* 顶角强调点 */}
-              <span
-                className={
-                  isAccentCard
-                    ? "absolute right-6 top-6 h-1.5 w-1.5 rounded-full bg-bg opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:right-8 md:top-8"
-                    : "absolute right-6 top-6 h-1.5 w-1.5 rounded-full bg-accent opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:right-8 md:top-8"
-                }
+              <ServiceCard
+                key={s.id}
+                s={s}
+                i={i}
+                isAccentCard={isAccentCard}
+                sTitle={sTitle}
+                sDesc={sDesc}
+                sBullets={sBullets}
+                setCursor={setCursor}
               />
-            </motion.div>
             );
           })}
         </div>

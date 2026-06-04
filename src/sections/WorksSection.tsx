@@ -1,7 +1,7 @@
 /**
  * 作品集 Section
  * - 顶部分类切换
- * - 不规则网格（错位 + 不同尺寸）
+ * - 头牌大卡（占整行 16:9）+ 等宽 3 列网格（4:3），整体规整对齐
  * - 切换分类时淡入淡出
  */
 import { useState } from "react";
@@ -93,7 +93,8 @@ export default function WorksSection() {
           </div>
         </div>
 
-        {/* 不规则网格 */}
+        {/* 作品网格：第一张作为大特色卡（占满整行），其余 3 列等宽规整排布
+            参考 base44 列表对齐感 —— 同尺寸 / 同间距 / 不再错位视差 */}
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
@@ -101,33 +102,23 @@ export default function WorksSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.5, ease: EASE.expo }}
-            className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-x-6 md:gap-y-20"
+            className="space-y-12 md:space-y-16"
           >
-            {works.map((w, i) => {
-              // 错位：奇偶下移制造不对称感
-              const span =
-                w.thumbAspect === "landscape"
-                  ? "md:col-span-7"
-                  : w.thumbAspect === "portrait"
-                  ? "md:col-span-5"
-                  : "md:col-span-6";
-              // 视差强度：每隔一张反向，让滚动时呈现深浅层次
-              const parallax = i % 2 === 0 ? 60 : -40;
-              const colStart = i % 2 === 1 ? "md:col-start-7" : "";
-              return (
-                <div
-                  key={w.slug}
-                  className={cn(
-                    span,
-                    colStart,
-                    // 第一个作品占满更大宽度
-                    i === 0 && "md:col-span-8 md:col-start-1"
-                  )}
-                >
-                  <WorkCard work={w} parallax={parallax} />
-                </div>
-              );
-            })}
+            {/* 头牌作品：第一张占满整行，比例 16/9 大横图 */}
+            {works[0] && (
+              <div className="w-full">
+                <WorkCard work={works[0]} variant="feature" />
+              </div>
+            )}
+
+            {/* 其余作品：等宽 3 列网格，全部 4:3 比例对齐 */}
+            {works.length > 1 && (
+              <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-y-16">
+                {works.slice(1).map((w) => (
+                  <WorkCard key={w.slug} work={w} variant="grid" />
+                ))}
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
