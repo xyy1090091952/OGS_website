@@ -11,6 +11,8 @@ import { useProfile } from "@/hooks/useWorks";
 import { ANCHORS, EASE } from "@/constants";
 import { useUIStore } from "@/store/uiStore";
 import { useT } from "@/lib/i18n";
+// Hero 动态互动背景（漂浮色球 + 跟随鼠标光斑）
+import HeroInteractiveBg from "@/components/HeroInteractiveBg";
 
 export default function HeroSection() {
   const profile = useProfile();
@@ -29,16 +31,17 @@ export default function HeroSection() {
   return (
     <section
       id={ANCHORS.HOME}
-      className="relative flex min-h-[100svh] items-end overflow-hidden pb-16 pt-32 md:items-center md:pb-12 md:pt-24"
+      // isolate：建立独立 stacking context，确保子元素的 -z-10 不会被 main 的背景吞掉
+      className="relative isolate flex min-h-[100svh] items-end overflow-hidden pb-16 pt-32 md:items-center md:pb-12 md:pt-24"
     >
-      {/* 背景：双色径向渐变光晕（跟随主题色 + 辅色）+ 噪点 */}
-      <div
-        className="bg-aurora-hero pointer-events-none absolute inset-0 -z-10"
-        aria-hidden
-      />
-      <div className="bg-grain absolute inset-0 -z-10" aria-hidden />
+      {/* 动态互动背景：三颗漂浮色球 + 鼠标跟随光斑（基于主题色）
+          替代原来的静态 bg-aurora-hero，让首屏更有生命力 */}
+      <HeroInteractiveBg />
+      {/* 噪点叠加层：让色块表面带颗粒感（在背景之上、内容之下） */}
+      <div className="bg-grain pointer-events-none absolute inset-0 z-0" aria-hidden />
 
-      <div className="ogs-container w-full">
+      {/* 内容容器：z-10 浮在背景之上 */}
+      <div className="ogs-container relative z-10 w-full">
         {/* 顶部小标签 */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}

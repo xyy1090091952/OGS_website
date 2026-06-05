@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import Cursor from "@/components/Cursor";
 import Loader from "@/components/Loader";
 import ScrollProgress from "@/components/ScrollProgress";
+import ScrollToTop from "@/components/ScrollToTop";
 import { useApplyTheme } from "@/hooks/useApplyTheme";
 import { useLenis } from "@/hooks/useLenis";
 import { ROUTES } from "@/constants";
@@ -26,6 +27,8 @@ export default function App() {
       <Loader />
       <Cursor />
       <ScrollProgress />
+      {/* 路由切换时自动回到顶部（详情页打开必须在最上） */}
+      <ScrollToTop />
       <Header />
       <main className="min-h-screen">
         <Routes>
