@@ -127,9 +127,15 @@ export default function ContactSection() {
       />
 
       <div className="ogs-container">
-        {/* 内容外壳：实色大白卡（base44 "So what are we building" 同款）
-            漂浮在重橙色渐变上，形成强烈反色对比 */}
-        <div className="rounded-[28px] bg-card/95 p-8 shadow-[0_40px_100px_-40px_rgb(var(--accent)/0.45)] ring-1 ring-fg/5 backdrop-blur-md md:p-14">
+        {/* 内容外壳：玻璃质感卡片
+            - 抛弃"卡片下方大投影"的旧 UI 习惯
+            - 改用：半透明底 + 强 backdrop-blur + 极细 ring 描边 + 顶部高光线
+            - 让下层的渐变 / 色球能透过卡片，画面有"层"的感觉而不是死贴 */}
+        <div
+          className="relative overflow-hidden rounded-[32px] bg-card/70 p-8 ring-1 ring-fg/10 backdrop-blur-2xl md:p-14
+            before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px
+            before:bg-gradient-to-r before:from-transparent before:via-fg/25 before:to-transparent"
+        >
         <SectionHeader
           num="04"
           tag={t("contact.tag")}

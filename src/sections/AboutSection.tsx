@@ -42,9 +42,18 @@ export default function AboutSection() {
           }
         />
 
-        {/* 内容外壳：实色大白卡（base44 use-cases 第二屏同款）
-            漂浮在粉紫渐变上，形成强烈反色对比 */}
-        <div className="rounded-[28px] bg-card/95 p-8 shadow-[0_30px_80px_-40px_rgb(var(--fg)/0.30)] ring-1 ring-fg/5 backdrop-blur-md md:p-14">
+        {/* 内容外壳：玻璃质感卡片
+            - 不再用陈旧的"卡片下方大投影"，改用：
+              · 半透明底（bg-card/70）+ 强 backdrop-blur 形成玻璃质感
+              · 极细 ring 描边（ring-fg/10）
+              · 顶部一道渐变高光线（before 伪元素），模拟玻璃边缘反光
+              · 配合背景的漂浮色球，背景的颜色会透过卡片
+            这种"frosted glass"语言更现代，base44/Linear/Arc 都在用 */}
+        <div
+          className="relative overflow-hidden rounded-[32px] bg-card/70 p-8 ring-1 ring-fg/10 backdrop-blur-2xl md:p-14
+            before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px
+            before:bg-gradient-to-r before:from-transparent before:via-fg/25 before:to-transparent"
+        >
         {/* 双栏：左签名图 / 右正文 */}
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
           {/* 左：大引文 + handle */}
