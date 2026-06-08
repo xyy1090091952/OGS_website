@@ -21,13 +21,9 @@ export default function AboutSection() {
   return (
     <section
       id={ANCHORS.ABOUT}
-      className="relative overflow-hidden px-5 py-24 md:px-12 md:py-40"
+      // bg-grad-about：渐变 B 灰 → 粉紫 → 淡青蓝（"色彩在底部聚集"）
+      className="bg-grad-about relative overflow-hidden px-5 py-24 md:px-12 md:py-40"
     >
-      {/* 背景柔光：对角双色（跟随主题色） */}
-      <div
-        className="bg-aurora-about pointer-events-none absolute inset-0 -z-10"
-        aria-hidden
-      />
       <div className="ogs-container">
         <SectionHeader
           num="01"
@@ -42,21 +38,10 @@ export default function AboutSection() {
           }
         />
 
-        {/* 内容外壳：玻璃质感卡片
-            - 不再用陈旧的"卡片下方大投影"，改用：
-              · 半透明底（bg-card/70）+ 强 backdrop-blur 形成玻璃质感
-              · 极细 ring 描边（ring-fg/10）
-              · 顶部一道渐变高光线（before 伪元素），模拟玻璃边缘反光
-              · 配合背景的漂浮色球，背景的颜色会透过卡片
-            这种"frosted glass"语言更现代，base44/Linear/Arc 都在用 */}
-        <div
-          className="relative overflow-hidden rounded-[32px] bg-card/70 p-8 ring-1 ring-fg/10 backdrop-blur-2xl md:p-14
-            before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px
-            before:bg-gradient-to-r before:from-transparent before:via-fg/25 before:to-transparent"
-        >
+        {/* v2：去掉旧的"玻璃卡"包裹，让段落渐变直接透出 —— base44 主页就是这么做的 */}
         {/* 双栏：左签名图 / 右正文 */}
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
-          {/* 左：大引文 + handle */}
+          {/* 左：大引文 + handle —— v2 用方角硬卡（borderRadius 4px），无投影 */}
           <div className="md:col-span-5">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -65,7 +50,7 @@ export default function AboutSection() {
               transition={{ duration: 0.8, ease: EASE.expo }}
               className="sticky top-32 space-y-6"
             >
-              <div className="rounded-2xl border border-fg/10 bg-card/50 p-6 backdrop-blur-sm">
+              <div className="rounded-sm border border-fg/15 bg-card p-6">
                 <div className="font-mono text-xs uppercase tracking-widest text-fg/40">
                   {t("about.profile")}
                 </div>
@@ -112,7 +97,7 @@ export default function AboutSection() {
               ))}
             </div>
 
-            {/* 关键词 */}
+            {/* 关键词（保留药丸 pill：base44 把"小标签"做成 999px 圆角） */}
             <div className="mt-12 flex flex-wrap gap-2">
               {keywords.map((k, i) => (
                 <motion.span
@@ -125,8 +110,8 @@ export default function AboutSection() {
                     ease: EASE.expo,
                     delay: i * 0.04,
                   }}
-                  whileHover={{ y: -3, rotate: -2 }}
-                  className="cursor-default rounded-full border border-fg/20 bg-card/60 px-4 py-1.5 text-xs uppercase tracking-widest text-fg/70 transition-colors hover:border-accent hover:text-accent"
+                  whileHover={{ y: -3 }}
+                  className="cursor-default rounded-full border border-fg/25 bg-card/70 px-4 py-1.5 text-xs uppercase tracking-widest text-fg/70 transition-colors hover:border-fg hover:text-fg"
                 >
                   {k}
                 </motion.span>
@@ -153,9 +138,7 @@ export default function AboutSection() {
                     className="relative"
                   >
                     {/* 圆点：精确压在 ul 左边线上
-                        ul 用 pl-8 (32px) + border-l，所以圆点中心需要在 -(32 + 圆点半径)
-                        圆点 h-3 w-3 = 12px，半径 6px，故 left = -38px
-                        z-10 确保圆点盖住线，不会被截断 */}
+                        ul 用 pl-8 (32px) + border-l，圆点中心 = -(32 + 6) = -38px */}
                     <span className="absolute -left-[38px] top-1.5 z-10 flex h-3 w-3 items-center justify-center rounded-full border border-fg/30 bg-bg">
                       <span className="h-1.5 w-1.5 rounded-full bg-accent" />
                     </span>
@@ -175,7 +158,6 @@ export default function AboutSection() {
               </ul>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </section>

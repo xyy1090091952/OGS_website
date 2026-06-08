@@ -3,27 +3,28 @@
 @tailwind utilities;
 
 /* ============== 主题变量（CSS Variables 驱动深浅色） ============== */
-/* 实际颜色由 useApplyTheme hook 在运行时根据 accent 主题写入；这里仅作 fallback */
+/* v2：base44 风格 —— 暖米白底 + 近黑文字 + 炙橙强调
+   实际颜色由 useApplyTheme hook 在运行时根据 accent 主题写入；这里仅作 fallback */
 :root {
-  /* 亮色主题默认（sunset）：暖米白底 + 近黑 + 炙橙强调 */
-  --bg: 246 240 232;
-  --fg: 28 22 18;
-  --muted: 156 163 175;
-  --accent: 255 87 34;       /* 主强调色 */
-  --accent-2: 255 196 161;   /* 辅强调色（双色渐变第二点） */
-  --line: 18 18 18;
-  --card: 255 251 246;
+  /* 亮色主题默认（base44 调色）：暖米白 #FAF9F7 + 近黑 #232529 + 炙橙 #FF983B */
+  --bg: 250 249 247;       /* #FAF9F7 暖米白 */
+  --fg: 35 37 41;          /* #232529 近黑 */
+  --muted: 114 114 114;    /* #727272 次级文字 */
+  --accent: 255 99 31;     /* #FF631F 主强调（base44 logo 同款橙） */
+  --accent-2: 255 152 59;  /* #FF983B 辅强调 */
+  --line: 176 176 176;     /* #B0B0B0 描边 */
+  --card: 255 255 255;     /* #FFFFFF 卡片底 */
 }
 
 .dark {
-  /* 暗色主题默认（sunset）：暖夜黑底 + 暖月白 + 暖琥珀强调 */
-  --bg: 20 16 14;
-  --fg: 240 232 222;
+  /* 暗色主题：仍保留 base44 风骨，但底色降为深炭黑（不发蓝） */
+  --bg: 20 19 17;          /* 暖深黑 */
+  --fg: 240 232 222;       /* 暖月白 */
   --muted: 148 148 152;
-  --accent: 255 179 71;
-  --accent-2: 255 138 107;
-  --line: 237 237 237;
-  --card: 30 24 22;
+  --accent: 255 152 59;    /* 暗色下用更亮的橙 */
+  --accent-2: 255 196 161;
+  --line: 64 60 56;
+  --card: 30 27 24;
 }
 
 /* ============== 基础排版 ============== */
@@ -45,7 +46,7 @@ body {
     color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* 主题色切换的全局柔和过渡：让 bg-accent / text-accent / border-accent 切换时不"硬切" */
+/* 主题色切换的全局柔和过渡 */
 *,
 *::before,
 *::after {
@@ -60,7 +61,7 @@ body {
   color: rgb(var(--bg));
 }
 
-/* 可访问性：键盘 Tab 时显示焦点描边；鼠标点击时不显示 */
+/* 焦点描边 */
 :focus {
   outline: none;
 }
@@ -70,7 +71,7 @@ body {
   border-radius: 4px;
 }
 
-/* ============== 自定义鼠标：仅在支持 hover 的设备上隐藏原生光标 ============== */
+/* 自定义鼠标 */
 @media (hover: hover) and (pointer: fine) {
   html.has-custom-cursor,
   html.has-custom-cursor * {
@@ -78,7 +79,7 @@ body {
   }
 }
 
-/* ============== 滚动条（克制风格） ============== */
+/* 滚动条（克制风格） */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -103,24 +104,24 @@ body {
     @apply font-mono text-xs tracking-widest uppercase text-fg/60;
   }
 
-  /* 主按钮：圆角描边 + hover 反白 */
+  /* 主按钮：base44 风 —— 方角小圆角 + 实色橙 + 无投影 */
   .btn-outline {
-    @apply inline-flex items-center gap-2 rounded-full border border-fg/30 px-5 py-2.5 text-sm
+    @apply inline-flex items-center gap-2 rounded-md border border-fg/30 px-5 py-2.5 text-sm
       transition-all duration-500 ease-expo hover:bg-fg hover:text-bg hover:border-fg
       active:scale-[0.97];
   }
 
-  /* 强调按钮 */
+  /* 强调按钮（CTA）—— 用 accent 主橙 */
   .btn-accent {
-    @apply inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm text-bg
-      transition-all duration-500 ease-expo hover:opacity-90 active:scale-[0.97];
+    @apply inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm text-white
+      transition-transform duration-500 ease-expo hover:-translate-y-0.5 active:scale-[0.97];
   }
 
-  /* 用作背景的细噪点（叠加 SVG） */
+  /* 用作背景的细噪点（叠加 SVG），让底色不"塑料" */
   .bg-grain {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
     background-size: 160px 160px;
-    opacity: 0.08;
+    opacity: 0.06;
     pointer-events: none;
   }
 
@@ -131,100 +132,104 @@ body {
   }
 }
 
-/* ============== 主题渐变背景（参考 base44 的"通铺鲜活色块"） ============== */
-/* 设计原则：
-   1. 每段整体通铺一个主色调（用 linear-gradient 全覆盖，高透明度 0.55~0.85）
-   2. 段落之间强对比：Hero 蓝/桃 → About 粉紫 → Works 灰 → Services 暖 → Contact 重橙
-   3. 顶层再叠 1~2 个对角大光球做立体感
-   4. 暗色模式下整体降一档，但仍保留通铺感，不发糊
-*/
+/* ============== base44 实证渐变库（v2 章节背景） ============== */
+/* 每段一组 linear-gradient，"前 42% 同色 → 91% 第二色 → 104% 第三色"
+   渐变会"在底部聚集"，制造章节过渡的色彩节拍 */
 
-/* ---------- Hero：整屏淡桃/蓝染色 + 底部强橙色带（对应 base44 首屏） ---------- */
-.bg-aurora-hero {
+/* ---------- 渐变 A：Hero 顶部光晕（青蓝光从画面外洒下）---------- */
+.bg-grad-hero {
   background:
-    /* 底部强色带：accent 主色，与下一段衔接 */
-    linear-gradient(180deg, transparent 60%, rgb(var(--accent) / 0.45) 88%, rgb(var(--accent) / 0.55) 100%),
-    /* 右侧大光球：主色 */
-    radial-gradient(60% 70% at 100% 30%, rgb(var(--accent) / 0.55) 0%, transparent 60%),
-    /* 左侧大光球：辅色 */
-    radial-gradient(60% 70% at 0% 70%, rgb(var(--accent-2) / 0.70) 0%, transparent 60%),
-    /* 整屏通铺底色：辅色淡铺（让画面整体被"染" 一层柔色） */
-    linear-gradient(180deg, rgb(var(--accent-2) / 0.55) 0%, rgb(var(--accent-2) / 0.30) 60%, transparent 100%);
+    radial-gradient(42.4% 36.95% at 50% 50%, rgba(250, 249, 247, 0.7) 0%, rgba(250, 249, 247, 0) 100%),
+    radial-gradient(97.22% 78.13% at 50% -17.36%, rgb(93, 179, 207) 22.39%, rgba(145, 201, 220, 0.56) 58.43%, rgba(250, 249, 247, 0) 85.73%);
+  background-color: #FAF9F7;
 }
-.dark .bg-aurora-hero {
+.dark .bg-grad-hero {
   background:
-    linear-gradient(180deg, transparent 60%, rgb(var(--accent) / 0.30) 88%, rgb(var(--accent) / 0.36) 100%),
-    radial-gradient(60% 70% at 100% 30%, rgb(var(--accent) / 0.32) 0%, transparent 60%),
-    radial-gradient(60% 70% at 0% 70%, rgb(var(--accent-2) / 0.40) 0%, transparent 60%),
-    linear-gradient(180deg, rgb(var(--accent-2) / 0.30) 0%, rgb(var(--accent-2) / 0.16) 60%, transparent 100%);
+    radial-gradient(42.4% 36.95% at 50% 50%, rgba(20, 19, 17, 0.7) 0%, rgba(20, 19, 17, 0) 100%),
+    radial-gradient(97.22% 78.13% at 50% -17.36%, rgba(93, 179, 207, 0.55) 22.39%, rgba(93, 179, 207, 0.20) 58.43%, rgba(20, 19, 17, 0) 85.73%);
+  background-color: #141311;
 }
 
-/* ---------- About：整屏粉紫通铺（对应 base44 use-cases 第二屏）---------- */
-.bg-aurora-about {
-  background:
-    /* 中央大光球加深 */
-    radial-gradient(80% 60% at 50% 50%, rgb(var(--accent-2) / 0.55) 0%, transparent 70%),
-    /* 左下主色光斑 */
-    radial-gradient(50% 50% at 0% 100%, rgb(var(--accent) / 0.40) 0%, transparent 60%),
-    /* 右上主色光斑 */
-    radial-gradient(50% 50% at 100% 0%, rgb(var(--accent) / 0.35) 0%, transparent 60%),
-    /* 整屏通铺辅色（高饱和） */
-    linear-gradient(135deg, rgb(var(--accent-2) / 0.60) 0%, rgb(var(--accent-2) / 0.45) 100%);
+/* ---------- 渐变 B：About 段（灰 → 粉紫 → 淡青蓝）---------- */
+.bg-grad-about {
+  background: linear-gradient(
+    rgb(240, 240, 240) 42.34%,
+    rgb(240, 195, 236) 91.67%,
+    rgb(204, 231, 233) 104.12%
+  );
 }
-.dark .bg-aurora-about {
-  background:
-    radial-gradient(80% 60% at 50% 50%, rgb(var(--accent-2) / 0.30) 0%, transparent 70%),
-    radial-gradient(50% 50% at 0% 100%, rgb(var(--accent) / 0.22) 0%, transparent 60%),
-    radial-gradient(50% 50% at 100% 0%, rgb(var(--accent) / 0.20) 0%, transparent 60%),
-    linear-gradient(135deg, rgb(var(--accent-2) / 0.30) 0%, rgb(var(--accent-2) / 0.20) 100%);
+.dark .bg-grad-about {
+  background: linear-gradient(
+    rgb(34, 32, 30) 42.34%,
+    rgb(78, 52, 78) 91.67%,
+    rgb(48, 76, 80) 104.12%
+  );
 }
 
-/* ---------- Services：暖色通铺过渡（衔接 Works 灰 → Contact 重橙）---------- */
-.bg-aurora-section {
-  background:
-    radial-gradient(60% 60% at 80% 50%, rgb(var(--accent) / 0.45) 0%, transparent 65%),
-    radial-gradient(60% 60% at 20% 50%, rgb(var(--accent-2) / 0.55) 0%, transparent 65%),
-    /* 整屏通铺：从左 accent-2 渐变到右 accent，色彩自然流动 */
-    linear-gradient(90deg, rgb(var(--accent-2) / 0.40) 0%, rgb(var(--accent) / 0.30) 100%);
+/* ---------- 渐变 D：Works 段（米 → 淡黄 → 明黄，暖底中和卡片图）---------- */
+.bg-grad-works {
+  background: linear-gradient(
+    rgb(237, 234, 228) 42.62%,
+    rgb(249, 251, 201) 94.17%,
+    rgb(254, 233, 105) 104.07%
+  );
 }
-.dark .bg-aurora-section {
-  background:
-    radial-gradient(60% 60% at 80% 50%, rgb(var(--accent) / 0.24) 0%, transparent 65%),
-    radial-gradient(60% 60% at 20% 50%, rgb(var(--accent-2) / 0.28) 0%, transparent 65%),
-    linear-gradient(90deg, rgb(var(--accent-2) / 0.20) 0%, rgb(var(--accent) / 0.16) 100%);
-}
-
-/* ---------- Contact：CTA 重色块（对应 base44 "So what are we building" 第四屏）---------- */
-.bg-aurora-contact {
-  background:
-    /* 顶部一抹 bg 柔白：避免标题被颜色淹没 */
-    linear-gradient(180deg, rgb(var(--bg) / 0.75) 0%, transparent 22%),
-    /* 左下大光球：辅色饱和 */
-    radial-gradient(55% 65% at 0% 100%, rgb(var(--accent-2) / 0.85) 0%, transparent 60%),
-    /* 右下大光球：辅色饱和 */
-    radial-gradient(55% 65% at 100% 100%, rgb(var(--accent-2) / 0.80) 0%, transparent 60%),
-    /* 整屏铺主色重色块 */
-    linear-gradient(180deg, rgb(var(--accent) / 0.55) 0%, rgb(var(--accent) / 0.85) 100%);
-}
-.dark .bg-aurora-contact {
-  background:
-    linear-gradient(180deg, rgb(var(--bg) / 0.75) 0%, transparent 22%),
-    radial-gradient(55% 65% at 0% 100%, rgb(var(--accent-2) / 0.45) 0%, transparent 60%),
-    radial-gradient(55% 65% at 100% 100%, rgb(var(--accent-2) / 0.40) 0%, transparent 60%),
-    linear-gradient(180deg, rgb(var(--accent) / 0.30) 0%, rgb(var(--accent) / 0.45) 100%);
+.dark .bg-grad-works {
+  background: linear-gradient(
+    rgb(28, 26, 22) 42.62%,
+    rgb(82, 78, 32) 94.17%,
+    rgb(140, 124, 32) 104.07%
+  );
 }
 
-/* ---------- Works 区：浅色点阵网格（中性留白节奏点）---------- */
-.bg-grid-dot {
-  /* 通铺一层极淡的 fg，让 Works 段比首页底色稍微"暗"一点点，作为节奏对比 */
-  background-color: rgb(var(--fg) / 0.025);
-  background-image: radial-gradient(rgb(var(--fg) / 0.12) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: 0 0;
+/* ---------- 渐变 E：Services 段（米 → 灰 → 红橙，最戏剧化）---------- */
+.bg-grad-services {
+  background: linear-gradient(
+    0deg,
+    rgb(255, 85, 0) -13.02%,
+    rgb(219, 221, 218) 9.58%,
+    rgb(245, 242, 236) 83.05%
+  );
 }
-.dark .bg-grid-dot {
-  background-color: rgb(var(--fg) / 0.02);
-  background-image: radial-gradient(rgb(var(--fg) / 0.10) 1px, transparent 1px);
+.dark .bg-grad-services {
+  background: linear-gradient(
+    0deg,
+    rgb(180, 56, 0) -13.02%,
+    rgb(58, 56, 52) 9.58%,
+    rgb(28, 26, 22) 83.05%
+  );
+}
+
+/* ---------- 渐变 C：Contact 段（米 → 灰 → 亮黄绿）---------- */
+.bg-grad-contact {
+  background: linear-gradient(
+    rgb(242, 241, 237) 42.49%,
+    rgb(213, 223, 224) 93.98%,
+    rgb(229, 255, 148) 104.08%
+  );
+}
+.dark .bg-grad-contact {
+  background: linear-gradient(
+    rgb(28, 26, 22) 42.49%,
+    rgb(58, 64, 64) 93.98%,
+    rgb(120, 156, 48) 104.08%
+  );
+}
+
+/* ---------- 渐变 F：Footer 段（橙 radial 大块，情绪收尾）---------- */
+.bg-grad-footer {
+  background: radial-gradient(
+    180.74% 100% at 50% 0%,
+    rgb(255, 85, 0) 0%,
+    rgb(255, 196, 148) 100%
+  );
+}
+.dark .bg-grad-footer {
+  background: radial-gradient(
+    180.74% 100% at 50% 0%,
+    rgb(180, 56, 0) 0%,
+    rgb(120, 84, 60) 100%
+  );
 }
 
 /* 关闭某些用户偏好下的复杂动画 */
@@ -240,39 +245,13 @@ body {
 }
 
 /* ============== Marquee 横向滚动条（CSS 关键帧实现）============== */
-/* 用 CSS 比 framer-motion 更可靠：hover 暂停只需 animation-play-state: paused */
 @keyframes ogs-marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 .ogs-marquee-track {
   animation: ogs-marquee 35s linear infinite;
-  /* 默认会被父级 hover 暂停（见下面 .ogs-marquee:hover .ogs-marquee-track） */
 }
 .ogs-marquee:hover .ogs-marquee-track {
   animation-play-state: paused;
 }
-
-/* ============== Hero 漂浮色球动画（CSS 关键帧）============== */
-/* 用 CSS 比 framer-motion 的 animate 数组更稳定，
-   也不会在视口外/路由切换时停摆 */
-@keyframes ogs-blob-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(80px, 60px) scale(1.08); }
-  66%      { transform: translate(-50px, -40px) scale(0.95); }
-}
-@keyframes ogs-blob-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(-70px, -50px) scale(1.05); }
-  66%      { transform: translate(60px, 50px) scale(0.92); }
-}
-@keyframes ogs-blob-3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(60px, -50px) scale(1.08); }
-  66%      { transform: translate(-70px, 40px) scale(0.92); }
-}
-.ogs-blob-1 { animation: ogs-blob-1 18s ease-in-out infinite; }
-.ogs-blob-2 { animation: ogs-blob-2 22s ease-in-out infinite; }
-.ogs-blob-3 { animation: ogs-blob-3 26s ease-in-out infinite; }
-/* 球 3 自漂浮（用于内层 span，外层 motion.div 已经处理鼠标偏移） */
-.ogs-blob-3-static { animation: ogs-blob-3 26s ease-in-out infinite; }

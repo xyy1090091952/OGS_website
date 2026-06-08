@@ -48,24 +48,24 @@ export interface AccentPreset {
 // ==================== 主题预设字典 ====================
 // RGB 用空格分隔的字符串，与 CSS 变量格式一致：rgb(var(--accent))
 export const ACCENTS: Record<AccentId, AccentPreset> = {
-  // ----- 1. Sunset 暖橙 + 蜜桃（默认，对应 base44 暖橙气质）-----
+  // ----- 1. Sunset 炙橙（v2 默认，对齐 base44 实证色）-----
   sunset: {
     id: "sunset",
     label: "Sunset",
-    swatch: { from: "#FF5722", to: "#FFB37A" },
+    swatch: { from: "#FF631F", to: "#FF983B" },
     light: {
-      accent: "255 87 34",   // #FF5722 炙橙
-      accent2: "255 179 122", // #FFB37A 蜜桃（提亮一档，让通铺更鲜活）
-      bg: "247 241 232",     // #F7F1E8 暖米白
-      fg: "28 22 18",        // #1C1612 偏暖深棕
-      card: "255 251 246",   // #FFFBF6 米白
+      accent: "255 99 31",   // #FF631F 炙橙（base44 logo 同款）
+      accent2: "255 152 59", // #FF983B 暖橙
+      bg: "250 249 247",     // #FAF9F7 暖米白（base44 实证底色）
+      fg: "35 37 41",        // #232529 近黑（base44 实证文字色）
+      card: "255 255 255",   // #FFFFFF
     },
     dark: {
-      accent: "255 159 64",  // #FF9F40 暖橙（提饱和）
-      accent2: "255 122 87", // #FF7A57 珊瑚（提饱和）
-      bg: "20 16 14",        // #14100E 暖夜黑
-      fg: "240 232 222",     // #F0E8DE 暖月白
-      card: "30 24 22",      // #1E1816
+      accent: "255 152 59",  // #FF983B 暗色提亮
+      accent2: "255 196 161", // #FFC4A1
+      bg: "20 19 17",        // 暖深黑
+      fg: "240 232 222",
+      card: "30 27 24",
     },
   },
 

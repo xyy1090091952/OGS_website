@@ -1,22 +1,19 @@
 /**
- * 联系方式 Section
+ * 联系方式 Section（v2：base44 风）
+ * - 整段铺渐变 C：米 → 灰 → 亮黄绿（强调收尾）
  * - 大字号邮箱（点击复制）
- * - 社交链接
- * - 底部彩蛋小动画
+ * - 社交链接：方角硬卡，hover 仅 transform，无光斑
  */
-import { useState, useRef } from "react";
-import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Copy, ArrowUpRight } from "lucide-react";
 import { useProfile } from "@/hooks/useWorks";
 import SectionHeader from "@/components/SectionHeader";
 import Toast from "@/components/Toast";
-import Magnetic from "@/components/Magnetic";
 import { ANCHORS, EASE } from "@/constants";
 import { useUIStore } from "@/store/uiStore";
 // 多语言：t 翻译 UI 文案
 import { useT } from "@/lib/i18n";
-// useHasHover：仅 hover 设备启用鼠标交互
-import { useHasHover } from "@/hooks/useMediaQuery";
 
 // 社交链接的类型（来自 profile.socials 的元素）
 type SocialItem = {
@@ -25,9 +22,8 @@ type SocialItem = {
 };
 
 /**
- * 单张社交卡片（带鼠标跟随高光）
- *  - 抽出子组件是为了能在每张卡里独立调用 useMotionValue（hooks 必须在组件顶层）
- *  - 鼠标移动时，在卡片内绘制一个跟随鼠标的柔和径向光晕
+ * 单张社交卡片（v2：方角硬卡 + hover 上移）
+ *  - 删除了原来的"鼠标跟随高光"光斑（base44 不用这种装饰）
  */
 function SocialCard({
   item,
@@ -37,63 +33,29 @@ function SocialCard({
   index: number;
 }) {
   const setCursor = useUIStore((s) => s.setCursor);
-  const hasHover = useHasHover();
-  const cardRef = useRef<HTMLAnchorElement>(null);
-
-  // 鼠标在卡片内的相对坐标（默认放到 -1000 远离屏幕，避免初始就显示）
-  const mx = useMotionValue(-1000);
-  const my = useMotionValue(-1000);
-  // 拼接 radial-gradient：让光晕中心跟随鼠标
-  const spotlight = useMotionTemplate`radial-gradient(220px circle at ${mx}px ${my}px, rgb(var(--accent) / 0.22), transparent 70%)`;
-
-  // 鼠标移动：更新光晕中心
-  const handleMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    mx.set(e.clientX - rect.left);
-    my.set(e.clientY - rect.top);
-  };
-  // 鼠标离开：把光晕推回 -1000（视觉上"消失"）
-  const handleLeave = () => {
-    mx.set(-1000);
-    my.set(-1000);
-    setCursor("default");
-  };
 
   return (
-    <Magnetic strength={0.15}>
-      <motion.a
-        ref={cardRef}
-        href={item.url}
-        target="_blank"
-        rel="noreferrer"
-        onMouseEnter={() => setCursor("hover-link")}
-        onMouseLeave={handleLeave}
-        onMouseMove={hasHover ? handleMove : undefined}
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, ease: EASE.expo, delay: index * 0.08 }}
-        className="group relative flex h-32 items-end justify-between overflow-hidden bg-bg p-6 transition-colors duration-300 hover:bg-card"
-      >
-        {/* 跟随鼠标的高光层（仅 hover 设备）；放在内容下面（z-0），不影响点击 */}
-        {hasHover && (
-          <motion.span
-            aria-hidden
-            className="pointer-events-none absolute inset-0"
-            style={{ backgroundImage: spotlight }}
-          />
-        )}
-        {/* 内容层（z-10 浮在高光上） */}
-        <span className="relative z-10 font-display text-2xl tracking-tight transition-colors group-hover:text-accent md:text-3xl">
-          {item.label}
-        </span>
-        <ArrowUpRight
-          size={24}
-          className="relative z-10 text-fg/40 transition-all duration-500 ease-expo group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-accent"
-        />
-      </motion.a>
-    </Magnetic>
+    <motion.a
+      href={item.url}
+      target="_blank"
+      rel="noreferrer"
+      onMouseEnter={() => setCursor("hover-link")}
+      onMouseLeave={() => setCursor("default")}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.6, ease: EASE.expo, delay: index * 0.08 }}
+      className="group relative flex h-32 items-end justify-between overflow-hidden border border-fg/15 bg-card p-6 transition-colors duration-300"
+    >
+      <span className="relative z-10 font-display text-2xl tracking-tight transition-colors group-hover:text-accent md:text-3xl">
+        {item.label}
+      </span>
+      <ArrowUpRight
+        size={24}
+        className="relative z-10 text-fg/40 transition-all duration-500 ease-expo group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-accent"
+      />
+    </motion.a>
   );
 }
 
@@ -118,24 +80,11 @@ export default function ContactSection() {
   return (
     <section
       id={ANCHORS.CONTACT}
-      className="relative overflow-hidden px-5 py-24 md:px-12 md:py-40"
+      // bg-grad-contact：渐变 C 米 → 灰 → 亮黄绿（强调收尾）
+      className="bg-grad-contact relative overflow-hidden px-5 py-24 md:px-12 md:py-40"
     >
-      {/* 背景柔和高光：双色径向渐变（跟随主题色） */}
-      <div
-        className="bg-aurora-contact pointer-events-none absolute inset-0 -z-10"
-        aria-hidden
-      />
-
       <div className="ogs-container">
-        {/* 内容外壳：玻璃质感卡片
-            - 抛弃"卡片下方大投影"的旧 UI 习惯
-            - 改用：半透明底 + 强 backdrop-blur + 极细 ring 描边 + 顶部高光线
-            - 让下层的渐变 / 色球能透过卡片，画面有"层"的感觉而不是死贴 */}
-        <div
-          className="relative overflow-hidden rounded-[32px] bg-card/70 p-8 ring-1 ring-fg/10 backdrop-blur-2xl md:p-14
-            before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px
-            before:bg-gradient-to-r before:from-transparent before:via-fg/25 before:to-transparent"
-        >
+        {/* v2：去掉旧的"玻璃卡"包裹，让段落渐变直接透出 */}
         <SectionHeader
           num="04"
           tag={t("contact.tag")}
@@ -177,8 +126,8 @@ export default function ContactSection() {
           </button>
         </motion.div>
 
-        {/* 社交链接：每张卡都有独立的鼠标跟随高光（SocialCard 子组件） */}
-        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-fg/10 bg-fg/10 sm:grid-cols-2 md:grid-cols-4">
+        {/* 社交链接：方角硬卡 + 细分隔 */}
+        <div className="grid grid-cols-1 gap-px bg-fg/15 sm:grid-cols-2 md:grid-cols-4">
           {profile.socials.map((s, i) => (
             <SocialCard key={s.label} item={s} index={i} />
           ))}
@@ -195,7 +144,6 @@ export default function ContactSection() {
           <span className="h-px w-8 bg-fg/20" />
           {t("contact.ps")}
         </motion.div>
-        </div>
       </div>
 
       <Toast visible={toast} message={t("contact.copied")} />

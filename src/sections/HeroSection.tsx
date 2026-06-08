@@ -1,9 +1,8 @@
 /**
- * Hero 主视觉
- * - 大字号 Display 字体显示 slogan
- * - 文字逐字浮入
- * - 背景渐变 + 噪点
- * - 滚动指引
+ * Hero 主视觉（v2：base44 风）
+ * - 整段铺渐变 A：暖米白 + 顶部青蓝光晕（radial-gradient at 50% -17.36%）
+ * - 大字号 Display 字体显示 slogan，左对齐巨字
+ * - 文字逐字浮入；底部 CTA 用主橙实色按钮
  */
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
@@ -11,8 +10,6 @@ import { useProfile } from "@/hooks/useWorks";
 import { ANCHORS, EASE } from "@/constants";
 import { useUIStore } from "@/store/uiStore";
 import { useT } from "@/lib/i18n";
-// Hero 动态互动背景（漂浮色球 + 跟随鼠标光斑）
-import HeroInteractiveBg from "@/components/HeroInteractiveBg";
 
 export default function HeroSection() {
   const profile = useProfile();
@@ -31,13 +28,11 @@ export default function HeroSection() {
   return (
     <section
       id={ANCHORS.HOME}
-      // isolate：建立独立 stacking context，确保子元素的 -z-10 不会被 main 的背景吞掉
-      className="relative isolate flex min-h-[100svh] items-end overflow-hidden pb-16 pt-32 md:items-center md:pb-12 md:pt-24"
+      // bg-grad-hero：base44 实证渐变 A，从画面外 -17.36% 顶端洒下青蓝光
+      // isolate：建立独立 stacking context
+      className="bg-grad-hero relative isolate flex min-h-[100svh] items-end overflow-hidden pb-16 pt-32 md:items-center md:pb-12 md:pt-24"
     >
-      {/* 动态互动背景：三颗漂浮色球 + 鼠标跟随光斑（基于主题色）
-          替代原来的静态 bg-aurora-hero，让首屏更有生命力 */}
-      <HeroInteractiveBg />
-      {/* 噪点叠加层：让色块表面带颗粒感（在背景之上、内容之下） */}
+      {/* 噪点叠加层：让色块表面带颗粒感 */}
       <div className="bg-grain pointer-events-none absolute inset-0 z-0" aria-hidden />
 
       {/* 内容容器：z-10 浮在背景之上 */}
@@ -96,31 +91,31 @@ export default function HeroSection() {
           {t("hero.subAfter")}
         </motion.p>
 
-        {/* CTA 反色按钮组（实色色块对照渐变背景，参考 base44 首屏右下橙色按钮）*/}
+        {/* CTA 按钮组（base44 风：方角小圆角 + 主橙实色 + 无投影） */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: EASE.expo, delay: 1.1 }}
           className="mt-8 flex flex-wrap items-center gap-3 md:mt-10"
         >
-          {/* 主按钮：fg 实色（深色块） */}
+          {/* 主按钮：accent 主橙 + 方角 6px + hover 上浮 */}
           <a
             href={`#${ANCHORS.WORKS}`}
             onMouseEnter={() => setCursor("hover-link")}
             onMouseLeave={() => setCursor("default")}
-            className="group inline-flex items-center gap-3 rounded-full bg-fg px-6 py-3.5 text-sm font-medium text-bg transition-all duration-500 hover:gap-4 hover:bg-accent"
+            className="group inline-flex items-center gap-3 rounded-md bg-accent px-6 py-3.5 text-sm font-medium text-white transition-transform duration-300 hover:-translate-y-0.5"
           >
             {t("hero.ctaPrimary")}
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-bg/20 transition-transform duration-500 group-hover:translate-x-0.5">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white/20 transition-transform duration-500 group-hover:translate-x-0.5">
               <ArrowDown size={14} className="-rotate-45" />
             </span>
           </a>
-          {/* 副按钮：透明 + 边框 */}
+          {/* 副按钮：透明 + 描边（方角） */}
           <a
             href={`#${ANCHORS.CONTACT}`}
             onMouseEnter={() => setCursor("hover-link")}
             onMouseLeave={() => setCursor("default")}
-            className="inline-flex items-center gap-2 rounded-full border border-fg/20 bg-bg/40 px-6 py-3.5 text-sm font-medium text-fg backdrop-blur-md transition-colors duration-300 hover:border-fg/60 hover:bg-bg/60"
+            className="inline-flex items-center gap-2 rounded-md border border-fg/40 px-6 py-3.5 text-sm font-medium text-fg transition-colors duration-300 hover:bg-fg hover:text-bg"
           >
             {t("hero.ctaSecondary")}
           </a>
